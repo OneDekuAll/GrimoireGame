@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}GrimoireGame{% endblock %}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(135deg, #2a1810 0%, #1a0f0a 100%);
+            color: #d4af37;
+            min-height: 100vh;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            color: #b8860b;
+            font-size: 1.2rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #1a0f3e 0%, #0f0a2e 100%);
+            border: 2px solid #d4af37;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #b8860b 0%, #d4af37 100%);
+            color: #1a0f3e;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+            color: white;
+        }
+        
+        .btn-green {
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 100%);
+            color: white;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            color: #d4af37;
+            font-size: 1rem;
+        }
+        
+        input::placeholder, textarea::placeholder {
+            color: #b8860b;
+        }
+        
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+    {% block content %}{% endblock %}
+    
+    <script>
+        {% block extra_js %}{% endblock %}
+    </script>
+</body>
+</html>

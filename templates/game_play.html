@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}{{ game_name }} - GrimoireGame{% endblock %}
+
+{% block extra_css %}
+.game-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.hint-card {
+    background: linear-gradient(135deg, #fffacd 0%, #f0e68c 100%);
+    border: 4px solid #d4af37;
+    border-radius: 20px;
+    padding: 3rem;
+    max-width: 700px;
+    color: #2a1810;
+    box-shadow: 0 20px 60px rgba(212, 175, 55, 0.5);
+    position: relative;
+}
+
+.hint-icon {
+    background: #d4af37;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 1rem;
+}
+
+.hint-text {
+    font-size: 1.5rem;
+    text-align: center;
+    margin: 2rem 0;
+    color: #d4af37;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.hint-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #d4af37;
+    margin: 2rem 0;
+}
+
+.hint-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.quest-sidebar {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #1a0f3e 0%, #0f0a2e 100%);
+    border: 2px solid #d4af37;
+    border-radius: 12px;
+    padding: 1.5rem;
+    min-width: 300px;
+}
+
+.progress-bar {
+    background: #2a1810;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #b8860b 0%, #d4af37 100%);
+    height: 100%;
+    width: 30%;
+}
+
+.home-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(26, 15, 62, 0.9);
+    border: 2px solid #d4af37;
+    color: #d4af37;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+{% endblock %}
+
+{% block content %}
+<button class="home-btn" onclick="location.href='/'">🏠</button>
+
+<div class="quest-sidebar">
+    <h3 style="color: #d4af37; margin-bottom: 1rem;">📜 Active Quest</h3>
+    <p style="color: #b8860b;">Defeat the Shadow Lord</p>
+    <p style="color: #90ee90; margin-top: 0.5rem;">Progress</p>
+    <div class="progress-bar">
+        <div class="progress-fill"></div>
+    </div>
+    <p style="color: #d4af37; text-align: right; margin-top: 0.3rem; font-size: 0.9rem;">30%</p>
+</div>
+
+<div class="game-container">
+    <div class="hint-card">
+        <div class="hint-icon">📜</div>
+        <p class="hint-text">"Check behind the waterfall for a hidden passage!"</p>
+        <hr style="border: 1px solid #d4af37; margin: 1.5rem 0;">
+        <div class="hint-meta">
+            <span>👤 90% of adventurers found this helpful</span>
+        </div>
+        <div class="hint-actions">
+            <button class="btn">🔊 Listen</button>
+            <button class="btn">👍</button>
+            <button class="btn">👎</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

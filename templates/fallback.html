@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Magic Disrupted - GrimoireGame{% endblock %}
+
+{% block extra_css %}
+.fallback-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    gap: 2rem;
+}
+
+.error-card {
+    background: linear-gradient(135deg, #1a0f3e 0%, #0f0a2e 100%);
+    border: 3px solid #dc143c;
+    border-radius: 12px;
+    padding: 3rem;
+    max-width: 800px;
+    text-align: center;
+}
+
+.error-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    color: #dc143c;
+}
+
+.error-title {
+    color: #dc143c;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    color: #d4af37;
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.warning-box {
+    background: rgba(139, 0, 0, 0.2);
+    border: 2px solid #dc143c;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+}
+
+.warning-box p {
+    color: #d4af37;
+    line-height: 1.6;
+}
+
+.wisdom-card {
+    background: linear-gradient(135deg, #1a0f3e 0%, #0f0a2e 100%);
+    border: 3px solid #d4af37;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 800px;
+    text-align: center;
+}
+
+.wisdom-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.wisdom-title {
+    color: #d4af37;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+}
+
+.wisdom-text {
+    color: #b8860b;
+    font-size: 1.1rem;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+
+.wisdom-author {
+    color: #90ee90;
+    font-size: 0.9rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+{% endblock %}
+
+{% block content %}
+<div class="fallback-container">
+    <div class="error-card">
+        <div class="error-icon">💎</div>
+        <h1 class="error-title">Magic Disrupted</h1>
+        <p class="error-message">Oops! The Grimoire's mystical connection has faded...</p>
+        
+        <div class="warning-box">
+            <p>⚠️ The ancient servers are temporarily enchanted by chaos magic. Fear not, fellow adventurer - we have backup wisdom!</p>
+        </div>
+    </div>
+    
+    <div class="wisdom-card">
+        <div class="wisdom-icon">✨</div>
+        <h2 class="wisdom-title">Ancient Wisdom Scroll</h2>
+        <p class="wisdom-text">"Save your game frequently, especially before major decisions"</p>
+        <p class="wisdom-author">— From the Guild of Anonymous Adventurers</p>
+    </div>
+    
+    <div class="action-buttons">
+        <button class="btn btn-green" onclick="location.href='/settings'">⚙️ Adjust Grimoire Settings</button>
+        <button class="btn" onclick="location.reload()">🔄 Try the Magic Again</button>
+    </div>
+    
+    <button class="btn btn-danger" style="margin-top: 1rem;" onclick="location.href='/'">🏠 Return to Sanctum</button>
+</div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}GrimoireGame - Your mystical gaming companion{% endblock %}
+
+{% block extra_css %}
+.adventure-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.adventure-card {
+    background: linear-gradient(135deg, #1a0f3e 0%, #0f0a2e 100%);
+    border: 3px solid #d4af37;
+    border-radius: 12px;
+    padding: 2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.adventure-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 40px rgba(212, 175, 55, 0.4);
+}
+
+.adventure-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.adventure-title {
+    font-size: 1.8rem;
+    color: #d4af37;
+    margin-bottom: 0.5rem;
+}
+
+.adventure-desc {
+    color: #b8860b;
+    margin-bottom: 1rem;
+}
+
+.difficulty-badge {
+    display: inline-block;
+    background: #8b0000;
+    color: white;
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.enter-realm {
+    color: #d4af37;
+    float: right;
+    font-size: 0.9rem;
+}
+
+.bottom-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 3rem;
+}
+{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>✨ GrimoireGame ✨</h1>
+    <p>Your mystical gaming companion</p>
+</div>
+
+<div class="container">
+    <div style="text-align: center; margin: 2rem 0;">
+        <h2 style="color: #90ee90; font-size: 2rem;">Choose Your Adventure</h2>
+    </div>
+    
+    <div class="adventure-grid">
+        {% for adventure in adventures %}
+        <div class="adventure-card" onclick="enterRealm('{{ adventure.name }}')">
+            <div class="adventure-icon">
+                {% if loop.index == 1 %}📜
+                {% elif loop.index == 2 %}🗡️
+                {% elif loop.index == 3 %}💎
+                {% else %}🛡️{% endif %}
+            </div>
+            <h3 class="adventure-title">{{ adventure.name }}</h3>
+            <p class="adventure-desc">{{ adventure.description }}</p>
+            <span class="difficulty-badge">{{ adventure.difficulty }}</span>
+            <span class="enter-realm">→ Enter the realm</span>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="bottom-buttons">
+        <button class="btn" onclick="location.href='/quest-grimoire'">📖 Quest Grimoire</button>
+        <button class="btn btn-green" onclick="location.href='/settings'">⚙️ Grimoire Settings</button>
+        <button class="btn" onclick="location.href='/fallback'">🏆 Test Fallback</button>
+    </div>
+</div>
+
+<script>
+function enterRealm(gameName) {
+    window.location.href = '/game/' + encodeURIComponent(gameName);
+}
+</script>
+{% endblock %}

@@ -3,6 +3,16 @@
 {% block title %}{{ game_name }} - GrimoireGame{% endblock %}
 
 {% block extra_css %}
+@keyframes cardFlip {
+    0% { transform: perspective(1000px) rotateY(-90deg); opacity: 0; }
+    100% { transform: perspective(1000px) rotateY(0deg); opacity: 1; }
+}
+
+@keyframes sidebarSlide {
+    0% { transform: translateX(100%); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
 .game-container {
     display: flex;
     justify-content: center;
@@ -11,34 +21,82 @@
 }
 
 .hint-card {
-    background: linear-gradient(135deg, #fffacd 0%, #f0e68c 100%);
-    border: 4px solid #d4af37;
+    background: linear-gradient(135deg, #f5f0e1 0%, #e8dcc8 100%);
+    border: 5px solid #8b7355;
     border-radius: 20px;
     padding: 3rem;
     max-width: 700px;
-    color: #2a1810;
-    box-shadow: 0 20px 60px rgba(212, 175, 55, 0.5);
+    color: #3d2817;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        inset 0 0 50px rgba(139, 115, 85, 0.2);
     position: relative;
+    animation: cardFlip 0.8s ease-out;
+}
+
+.hint-card::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border: 2px solid rgba(139, 115, 85, 0.4);
+    border-radius: 15px;
+    pointer-events: none;
+}
+
+.hint-card::after {
+    content: '✨';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    font-size: 3rem;
+    animation: magicSparkle 2s infinite;
 }
 
 .hint-icon {
-    background: #d4af37;
-    width: 60px;
-    height: 60px;
+    background: linear-gradient(135deg, #8b7355 0%, #6b5745 100%);
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
-    margin: 0 auto 1rem;
+    font-size: 2.5rem;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    animation: float 3s ease-in-out infinite;
+    border: 3px solid #5a4a3a;
 }
 
 .hint-text {
-    font-size: 1.5rem;
+    font-family: 'IM Fell English', serif;
+    font-size: 1.8rem;
     text-align: center;
     margin: 2rem 0;
-    color: #d4af37;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    color: #3d2817;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.hint-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #8b7355, transparent);
+    margin: 2rem 0;
+    position: relative;
+}
+
+.hint-divider::before {
+    content: '❖';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #e8dcc8;
+    padding: 0 10px;
+    color: #8b7355;
 }
 
 .hint-meta {
@@ -46,8 +104,9 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    color: #d4af37;
+    color: #6b5745;
     margin: 2rem 0;
+    font-size: 1.1rem;
 }
 
 .hint-actions {
@@ -57,63 +116,102 @@
     margin-top: 2rem;
 }
 
+.hint-actions .btn {
+    font-size: 1.2rem;
+    padding: 0.8rem 1.5rem;
+    background: linear-gradient(135deg, #8b7355 0%, #6b5745 100%);
+    border-color: #6b5745;
+}
+
+.hint-actions .btn:hover {
+    background: linear-gradient(135deg, #6b5745 0%, #5a4a3a 100%);
+    border-color: #5a4a3a;
+}
+
 .quest-sidebar {
     position: fixed;
     top: 20px;
     right: 20px;
-    background: linear-gradient(135deg, #1a0f3e 0%, #0f0a2e 100%);
-    border: 2px solid #d4af37;
-    border-radius: 12px;
-    padding: 1.5rem;
-    min-width: 300px;
+    background: linear-gradient(135deg, rgba(26, 15, 62, 0.95) 0%, rgba(15, 10, 46, 0.95) 100%);
+    border: 3px solid #d4af37;
+    border-radius: 15px;
+    padding: 2rem;
+    min-width: 320px;
+    box-shadow: 
+        0 10px 40px rgba(212, 175, 55, 0.4),
+        inset 0 0 30px rgba(212, 175, 55, 0.05);
+    backdrop-filter: blur(10px);
+    animation: sidebarSlide 0.8s ease-out;
+}
+
+.quest-sidebar h3 {
+    font-family: 'Cinzel', serif;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    animation: glow 3s ease-in-out infinite;
 }
 
 .progress-bar {
-    background: #2a1810;
-    height: 10px;
-    border-radius: 5px;
+    background: rgba(42, 24, 16, 0.5);
+    height: 12px;
+    border-radius: 6px;
     overflow: hidden;
-    margin-top: 0.5rem;
+    margin-top: 0.8rem;
+    border: 2px solid #d4af37;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
 }
 
 .progress-fill {
-    background: linear-gradient(90deg, #b8860b 0%, #d4af37 100%);
+    background: linear-gradient(90deg, #b8860b 0%, #d4af37 50%, #b8860b 100%);
     height: 100%;
     width: 30%;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
+    animation: shimmer 2s linear infinite;
+    background-size: 200% 100%;
 }
 
 .home-btn {
     position: fixed;
     top: 20px;
     left: 20px;
-    background: rgba(26, 15, 62, 0.9);
-    border: 2px solid #d4af37;
+    background: rgba(26, 15, 62, 0.95);
+    border: 3px solid #d4af37;
     color: #d4af37;
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
+    padding: 1rem 1.8rem;
+    border-radius: 50%;
     cursor: pointer;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.home-btn:hover {
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.6);
+    border-color: #fff;
 }
 {% endblock %}
 
 {% block content %}
-<button class="home-btn" onclick="location.href='/'">🏠</button>
+<button class="home-btn" onclick="transitionToPage('/')">🏠</button>
 
 <div class="quest-sidebar">
     <h3 style="color: #d4af37; margin-bottom: 1rem;">📜 Active Quest</h3>
-    <p style="color: #b8860b;">Defeat the Shadow Lord</p>
-    <p style="color: #90ee90; margin-top: 0.5rem;">Progress</p>
+    <p style="color: #b8860b; font-size: 1.1rem;">Defeat the Shadow Lord</p>
+    <p style="color: #90ee90; margin-top: 1rem; font-weight: bold;">Progress</p>
     <div class="progress-bar">
         <div class="progress-fill"></div>
     </div>
-    <p style="color: #d4af37; text-align: right; margin-top: 0.3rem; font-size: 0.9rem;">30%</p>
+    <p style="color: #d4af37; text-align: right; margin-top: 0.5rem; font-size: 1.1rem; font-weight: bold;">30%</p>
 </div>
 
 <div class="game-container">
     <div class="hint-card">
         <div class="hint-icon">📜</div>
         <p class="hint-text">"Check behind the waterfall for a hidden passage!"</p>
-        <hr style="border: 1px solid #d4af37; margin: 1.5rem 0;">
+        <div class="hint-divider"></div>
         <div class="hint-meta">
             <span>👤 90% of adventurers found this helpful</span>
         </div>

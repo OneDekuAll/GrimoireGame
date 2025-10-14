@@ -42,7 +42,7 @@ game_library = [
     }
 ]
 
-# Color themes
+# Color themes - EXPANDED
 themes = {
     "default": {
         "name": "Mystic Gold",
@@ -115,6 +115,114 @@ themes = {
         "danger": "#dc143c",
         "bg_primary": "rgba(15, 46, 40, 0.98)",
         "bg_secondary": "rgba(10, 30, 25, 0.98)"
+    },
+    "rose": {
+        "name": "Rose Garden",
+        "primary": "#ff69b4",
+        "secondary": "#c71585",
+        "accent": "#ffb6c1",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(62, 15, 46, 0.98)",
+        "bg_secondary": "rgba(46, 10, 30, 0.98)"
+    },
+    "amber": {
+        "name": "Amber Sunset",
+        "primary": "#ffbf00",
+        "secondary": "#ff8c00",
+        "accent": "#ffd700",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(62, 40, 15, 0.98)",
+        "bg_secondary": "rgba(46, 25, 10, 0.98)"
+    },
+    "sapphire": {
+        "name": "Sapphire Ocean",
+        "primary": "#0f52ba",
+        "secondary": "#082567",
+        "accent": "#6495ed",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(15, 30, 62, 0.98)",
+        "bg_secondary": "rgba(10, 20, 46, 0.98)"
+    },
+    "obsidian": {
+        "name": "Obsidian Night",
+        "primary": "#4a4a4a",
+        "secondary": "#2a2a2a",
+        "accent": "#6a6a6a",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(20, 20, 25, 0.98)",
+        "bg_secondary": "rgba(10, 10, 15, 0.98)"
+    },
+    "ruby": {
+        "name": "Ruby Fire",
+        "primary": "#e0115f",
+        "secondary": "#9b111e",
+        "accent": "#ff1493",
+        "danger": "#8b0000",
+        "bg_primary": "rgba(62, 10, 30, 0.98)",
+        "bg_secondary": "rgba(46, 5, 20, 0.98)"
+    },
+    "turquoise": {
+        "name": "Turquoise Wave",
+        "primary": "#40e0d0",
+        "secondary": "#00ced1",
+        "accent": "#afeeee",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(15, 46, 50, 0.98)",
+        "bg_secondary": "rgba(10, 30, 35, 0.98)"
+    },
+    "lavender": {
+        "name": "Lavender Fields",
+        "primary": "#b57edc",
+        "secondary": "#8b5a9e",
+        "accent": "#dda0dd",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(40, 25, 50, 0.98)",
+        "bg_secondary": "rgba(25, 15, 35, 0.98)"
+    },
+    "coral": {
+        "name": "Coral Reef",
+        "primary": "#ff7f50",
+        "secondary": "#ff6347",
+        "accent": "#ffa07a",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(62, 30, 25, 0.98)",
+        "bg_secondary": "rgba(46, 20, 15, 0.98)"
+    },
+    "mint": {
+        "name": "Mint Breeze",
+        "primary": "#98ff98",
+        "secondary": "#3eb489",
+        "accent": "#aaffc3",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(20, 46, 35, 0.98)",
+        "bg_secondary": "rgba(15, 30, 25, 0.98)"
+    },
+    "sunset": {
+        "name": "Sunset Horizon",
+        "primary": "#ff6b35",
+        "secondary": "#f7931e",
+        "accent": "#ffb347",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(62, 25, 15, 0.98)",
+        "bg_secondary": "rgba(46, 15, 10, 0.98)"
+    },
+    "midnight": {
+        "name": "Midnight Blue",
+        "primary": "#191970",
+        "secondary": "#000080",
+        "accent": "#4169e1",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(10, 10, 46, 0.98)",
+        "bg_secondary": "rgba(5, 5, 30, 0.98)"
+    },
+    "galaxy": {
+        "name": "Galaxy Purple",
+        "primary": "#a020f0",
+        "secondary": "#7b2cbf",
+        "accent": "#c77dff",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(40, 10, 62, 0.98)",
+        "bg_secondary": "rgba(30, 5, 46, 0.98)"
     }
 }
 

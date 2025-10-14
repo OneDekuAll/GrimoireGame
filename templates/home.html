@@ -2,7 +2,8 @@
 
 {% block title %}GrimoireGame - Your mystical gaming companion{% endblock %}
 
-{% block extra_css %}
+{% block content %}
+<style>
 .adventure-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
@@ -11,8 +12,7 @@
 }
 
 .adventure-card {
-    background: linear-gradient(135deg, rgba(26, 15, 62, 0.98) 0%, rgba(15, 10, 46, 0.98) 100%);
-    border: 3px solid #d4af37;
+    border: 3px solid;
     border-radius: 15px;
     padding: 2.5rem;
     cursor: pointer;
@@ -47,7 +47,6 @@
     box-shadow: 
         0 15px 60px rgba(212, 175, 55, 0.6),
         inset 0 0 40px rgba(212, 175, 55, 0.1);
-    border-color: #fff;
 }
 
 .adventure-icon {
@@ -60,13 +59,11 @@
 .adventure-title {
     font-family: 'Cinzel', serif;
     font-size: 2rem;
-    color: #d4af37;
     margin-bottom: 1rem;
     text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
 }
 
 .adventure-desc {
-    color: #b8860b;
     margin-bottom: 1.5rem;
     font-size: 1.1rem;
     font-style: italic;
@@ -88,14 +85,12 @@
 }
 
 .enter-realm {
-    color: #d4af37;
     float: right;
     font-size: 1rem;
     transition: all 0.3s ease;
 }
 
 .adventure-card:hover .enter-realm {
-    color: #fff;
     transform: translateX(5px);
 }
 
@@ -114,44 +109,45 @@
 
 .title-section h2 {
     font-family: 'Cinzel', serif;
-    color: #90ee90;
     font-size: 2.5rem;
     text-shadow: 0 0 20px rgba(144, 238, 144, 0.5);
     animation: glow 2s ease-in-out infinite;
     letter-spacing: 0.2rem;
     text-transform: uppercase;
 }
-{% endblock %}
+</style>
 
-{% block content %}
 <div class="header">
-    <h1>✨ GrimoireGame ✨</h1>
-    <p>Your mystical gaming companion</p>
+    <h1 style="color: {{ theme.primary }};">✨ GrimoireGame ✨</h1>
+    <p style="color: {{ theme.secondary }};">Your mystical gaming companion</p>
 </div>
 
 <div class="container">
     <div class="title-section">
-        <h2>Choose Your Adventure</h2>
+        <h2 style="color: {{ theme.accent }};">Choose Your Adventure</h2>
     </div>
     
     <div class="adventure-grid">
         {% for adventure in adventures %}
-        <div class="adventure-card" onclick="enterRealm('{{ adventure.name }}')">
+        <div class="adventure-card" 
+             style="background: linear-gradient(135deg, {{ theme.bg_primary }}, {{ theme.bg_secondary }}); border-color: {{ theme.primary }};"
+             onclick="enterRealm('{{ adventure.name }}')">
             <div class="adventure-icon">
                 {% if loop.index == 1 %}📜
                 {% elif loop.index == 2 %}🗡️
                 {% elif loop.index == 3 %}💎
                 {% else %}🛡️{% endif %}
             </div>
-            <h3 class="adventure-title">{{ adventure.name }}</h3>
-            <p class="adventure-desc">{{ adventure.description }}</p>
+            <h3 class="adventure-title" style="color: {{ theme.primary }};">{{ adventure.name }}</h3>
+            <p class="adventure-desc" style="color: {{ theme.secondary }};">{{ adventure.description }}</p>
             <span class="difficulty-badge">{{ adventure.difficulty }}</span>
-            <span class="enter-realm">→ Enter the realm</span>
+            <span class="enter-realm" style="color: {{ theme.primary }};">→ Enter the realm</span>
         </div>
         {% endfor %}
     </div>
     
     <div class="bottom-buttons">
+        <button class="btn" onclick="transitionToPage('/library')">📚 Game Library</button>
         <button class="btn" onclick="transitionToPage('/quest-grimoire')">📖 Quest Grimoire</button>
         <button class="btn btn-green" onclick="transitionToPage('/settings')">⚙️ Grimoire Settings</button>
         <button class="btn" onclick="transitionToPage('/fallback')">🏆 Test Fallback</button>

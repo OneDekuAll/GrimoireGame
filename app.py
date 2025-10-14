@@ -42,9 +42,18 @@ game_library = [
     }
 ]
 
-# Color themes
+# Color themes - EXPANDED with 38 themes including cosmic
 themes = {
     "default": {
+         "name": "Galaxy Purple",
+        "primary": "#a020f0",
+        "secondary": "#7b2cbf",
+        "accent": "#c77dff",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(40, 10, 62, 0.98)",
+        "bg_secondary": "rgba(30, 5, 46, 0.98)"
+    },
+    "gold": {
         "name": "Mystic Gold",
         "primary": "#d4af37",
         "secondary": "#b8860b",
@@ -52,6 +61,78 @@ themes = {
         "danger": "#dc143c",
         "bg_primary": "rgba(26, 15, 62, 0.98)",
         "bg_secondary": "rgba(15, 10, 46, 0.98)"
+    },
+    "cosmic": {
+        "name": "Cosmic Void",
+        "primary": "#8a2be2",
+        "secondary": "#4b0082",
+        "accent": "#da70d6",
+        "danger": "#ff1493",
+        "bg_primary": "rgba(20, 10, 40, 0.98)",
+        "bg_secondary": "rgba(10, 5, 25, 0.98)"
+    },
+    "nebula": {
+        "name": "Nebula Storm",
+        "primary": "#ff00ff",
+        "secondary": "#8b00ff",
+        "accent": "#ff69b4",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(50, 10, 50, 0.98)",
+        "bg_secondary": "rgba(35, 5, 35, 0.98)"
+    },
+    "starlight": {
+        "name": "Starlight Blue",
+        "primary": "#00bfff",
+        "secondary": "#1e90ff",
+        "accent": "#87cefa",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(10, 25, 50, 0.98)",
+        "bg_secondary": "rgba(5, 15, 35, 0.98)"
+    },
+    "aurora": {
+        "name": "Aurora Borealis",
+        "primary": "#00ff7f",
+        "secondary": "#00ced1",
+        "accent": "#7fffd4",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(10, 40, 50, 0.98)",
+        "bg_secondary": "rgba(5, 25, 35, 0.98)"
+    },
+    "supernova": {
+        "name": "Supernova Burst",
+        "primary": "#ff4500",
+        "secondary": "#ff8c00",
+        "accent": "#ffd700",
+        "danger": "#ff0000",
+        "bg_primary": "rgba(50, 20, 10, 0.98)",
+        "bg_secondary": "rgba(35, 10, 5, 0.98)"
+    },
+    "blackhole": {
+        "name": "Black Hole",
+        "primary": "#4169e1",
+        "secondary": "#191970",
+        "accent": "#6495ed",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(5, 5, 15, 0.98)",
+        "bg_secondary": "rgba(2, 2, 8, 0.98)"
+    },
+    "stardust": {
+        "name": "Stardust Trail",
+        "primary": "#ffd700",
+        "secondary": "#daa520",
+        "accent": "#fffacd",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(40, 35, 50, 0.98)",
+        "bg_secondary": "rgba(25, 20, 35, 0.98)"
+    },
+    "deepspace": {
+        "name": "Deep Space",
+        "primary": "#483d8b",
+        "secondary": "#2f4f4f",
+        "accent": "#6a5acd",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(15, 10, 30, 0.98)",
+        "bg_secondary": "rgba(8, 5, 18, 0.98)"
     },
     "emerald": {
         "name": "Emerald Forest",
@@ -115,6 +196,213 @@ themes = {
         "danger": "#dc143c",
         "bg_primary": "rgba(15, 46, 40, 0.98)",
         "bg_secondary": "rgba(10, 30, 25, 0.98)"
+    },
+    "rose": {
+        "name": "Rose Garden",
+        "primary": "#ff69b4",
+        "secondary": "#c71585",
+        "accent": "#ffb6c1",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(62, 15, 46, 0.98)",
+        "bg_secondary": "rgba(46, 10, 30, 0.98)"
+    },
+    "amber": {
+        "name": "Amber Sunset",
+        "primary": "#ffbf00",
+        "secondary": "#ff8c00",
+        "accent": "#ffd700",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(62, 40, 15, 0.98)",
+        "bg_secondary": "rgba(46, 25, 10, 0.98)"
+    },
+    "sapphire": {
+        "name": "Sapphire Ocean",
+        "primary": "#0f52ba",
+        "secondary": "#082567",
+        "accent": "#6495ed",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(15, 30, 62, 0.98)",
+        "bg_secondary": "rgba(10, 20, 46, 0.98)"
+    },
+    "obsidian": {
+        "name": "Obsidian Night",
+        "primary": "#4a4a4a",
+        "secondary": "#2a2a2a",
+        "accent": "#6a6a6a",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(20, 20, 25, 0.98)",
+        "bg_secondary": "rgba(10, 10, 15, 0.98)"
+    },
+    "ruby": {
+        "name": "Ruby Fire",
+        "primary": "#e0115f",
+        "secondary": "#9b111e",
+        "accent": "#ff1493",
+        "danger": "#8b0000",
+        "bg_primary": "rgba(62, 10, 30, 0.98)",
+        "bg_secondary": "rgba(46, 5, 20, 0.98)"
+    },
+    "turquoise": {
+        "name": "Turquoise Wave",
+        "primary": "#40e0d0",
+        "secondary": "#00ced1",
+        "accent": "#afeeee",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(15, 46, 50, 0.98)",
+        "bg_secondary": "rgba(10, 30, 35, 0.98)"
+    },
+    "lavender": {
+        "name": "Lavender Fields",
+        "primary": "#b57edc",
+        "secondary": "#8b5a9e",
+        "accent": "#dda0dd",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(40, 25, 50, 0.98)",
+        "bg_secondary": "rgba(25, 15, 35, 0.98)"
+    },
+    "coral": {
+        "name": "Coral Reef",
+        "primary": "#ff7f50",
+        "secondary": "#ff6347",
+        "accent": "#ffa07a",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(62, 30, 25, 0.98)",
+        "bg_secondary": "rgba(46, 20, 15, 0.98)"
+    },
+    "mint": {
+        "name": "Mint Breeze",
+        "primary": "#98ff98",
+        "secondary": "#3eb489",
+        "accent": "#aaffc3",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(20, 46, 35, 0.98)",
+        "bg_secondary": "rgba(15, 30, 25, 0.98)"
+    },
+    "sunset": {
+        "name": "Sunset Horizon",
+        "primary": "#ff6b35",
+        "secondary": "#f7931e",
+        "accent": "#ffb347",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(62, 25, 15, 0.98)",
+        "bg_secondary": "rgba(46, 15, 10, 0.98)"
+    },
+    "midnight": {
+        "name": "Midnight Blue",
+        "primary": "#191970",
+        "secondary": "#000080",
+        "accent": "#4169e1",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(10, 10, 46, 0.98)",
+        "bg_secondary": "rgba(5, 5, 30, 0.98)"
+    },
+    "volcanic": {
+        "name": "Volcanic Ash",
+        "primary": "#ff6347",
+        "secondary": "#8b0000",
+        "accent": "#ff4500",
+        "danger": "#b22222",
+        "bg_primary": "rgba(50, 15, 10, 0.98)",
+        "bg_secondary": "rgba(35, 8, 5, 0.98)"
+    },
+    "arctic": {
+        "name": "Arctic Ice",
+        "primary": "#b0e0e6",
+        "secondary": "#4682b4",
+        "accent": "#e0ffff",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(20, 30, 40, 0.98)",
+        "bg_secondary": "rgba(10, 20, 30, 0.98)"
+    },
+    "toxicgreen": {
+        "name": "Toxic Glow",
+        "primary": "#39ff14",
+        "secondary": "#00ff00",
+        "accent": "#7fff00",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(10, 40, 10, 0.98)",
+        "bg_secondary": "rgba(5, 25, 5, 0.98)"
+    },
+    "neon": {
+        "name": "Neon Lights",
+        "primary": "#ff10f0",
+        "secondary": "#ff00ff",
+        "accent": "#00ffff",
+        "danger": "#ff0066",
+        "bg_primary": "rgba(20, 10, 30, 0.98)",
+        "bg_secondary": "rgba(10, 5, 20, 0.98)"
+    },
+    "cyberpunk": {
+        "name": "Cyberpunk City",
+        "primary": "#00ffff",
+        "secondary": "#ff00ff",
+        "accent": "#ffff00",
+        "danger": "#ff0000",
+        "bg_primary": "rgba(10, 10, 25, 0.98)",
+        "bg_secondary": "rgba(5, 5, 15, 0.98)"
+    },
+    "solarsystem": {
+        "name": "Solar System",
+        "primary": "#ffa500",
+        "secondary": "#ff8c00",
+        "accent": "#ffff00",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(30, 20, 10, 0.98)",
+        "bg_secondary": "rgba(20, 10, 5, 0.98)"
+    },
+    "moonlight": {
+        "name": "Moonlight Silver",
+        "primary": "#e6e6fa",
+        "secondary": "#9370db",
+        "accent": "#f0e68c",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(30, 25, 40, 0.98)",
+        "bg_secondary": "rgba(20, 15, 30, 0.98)"
+    },
+    "comet": {
+        "name": "Comet Trail",
+        "primary": "#00ffff",
+        "secondary": "#4169e1",
+        "accent": "#87ceeb",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(10, 20, 40, 0.98)",
+        "bg_secondary": "rgba(5, 10, 25, 0.98)"
+    },
+    "plasma": {
+        "name": "Plasma Energy",
+        "primary": "#ff00ff",
+        "secondary": "#ff1493",
+        "accent": "#ee82ee",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(40, 10, 40, 0.98)",
+        "bg_secondary": "rgba(25, 5, 25, 0.98)"
+    },
+    "quantumrealm": {
+        "name": "Quantum Realm",
+        "primary": "#9d00ff",
+        "secondary": "#6a0dad",
+        "accent": "#bf00ff",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(25, 5, 35, 0.98)",
+        "bg_secondary": "rgba(15, 2, 25, 0.98)"
+    },
+    "voidwalker": {
+        "name": "Voidwalker",
+        "primary": "#8a2be2",
+        "secondary": "#000000",
+        "accent": "#9370db",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(10, 5, 20, 0.98)",
+        "bg_secondary": "rgba(5, 2, 10, 0.98)"
+    },
+    "celestial": {
+        "name": "Celestial Light",
+        "primary": "#fffacd",
+        "secondary": "#ffd700",
+        "accent": "#ffffe0",
+        "danger": "#dc143c",
+        "bg_primary": "rgba(40, 35, 50, 0.98)",
+        "bg_secondary": "rgba(25, 20, 35, 0.98)"
     }
 }
 

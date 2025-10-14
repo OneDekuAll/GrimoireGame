@@ -3,102 +3,166 @@
 {% block title %}Grimoire Configuration - GrimoireGame{% endblock %}
 
 {% block extra_css %}
+@keyframes tabGlow {
+    0%, 100% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.6); }
+}
+
 .tabs {
     display: flex;
     gap: 0;
-    margin-bottom: 2rem;
+    margin-bottom: 0;
+    animation: fadeIn 0.8s ease-out;
 }
 
 .tab {
     flex: 1;
-    padding: 1rem;
-    background: #1a0f3e;
-    border: 2px solid #d4af37;
+    padding: 1.5rem;
+    background: rgba(26, 15, 62, 0.5);
+    border: 3px solid #d4af37;
+    border-bottom: none;
     color: #d4af37;
     cursor: pointer;
-    transition: all 0.3s;
-    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+    font-family: 'Cinzel', serif;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    position: relative;
 }
 
 .tab:first-child {
-    border-radius: 8px 0 0 0;
+    border-radius: 15px 0 0 0;
 }
 
 .tab:last-child {
-    border-radius: 0 8px 0 0;
+    border-radius: 0 15px 0 0;
+}
+
+.tab::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #d4af37;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
 }
 
 .tab.active {
-    background: linear-gradient(135deg, #b8860b 0%, #d4af37 100%);
-    color: #1a0f3e;
+    background: linear-gradient(135deg, rgba(26, 15, 62, 0.95) 0%, rgba(15, 10, 46, 0.95) 100%);
+    color: #fff;
+    animation: tabGlow 2s ease-in-out infinite;
+}
+
+.tab.active::before {
+    transform: scaleX(1);
 }
 
 .tab:hover:not(.active) {
-    background: #2a1f5e;
+    background: rgba(42, 31, 94, 0.7);
+    color: #fff;
+    transform: translateY(-3px);
 }
 
 .settings-content {
-    background: linear-gradient(135deg, #1a0f3e 0%, #0f0a2e 100%);
-    border: 3px solid #d4af37;
-    border-radius: 0 0 12px 12px;
+    background: linear-gradient(135deg, rgba(26, 15, 62, 0.95) 0%, rgba(15, 10, 46, 0.95) 100%);
+    border: 4px solid #d4af37;
+    border-top: none;
+    border-radius: 0 0 15px 15px;
     padding: 3rem;
+    box-shadow: 
+        0 20px 60px rgba(212, 175, 55, 0.4),
+        inset 0 0 50px rgba(212, 175, 55, 0.05);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 1s ease-out;
 }
 
 .section-heading {
+    font-family: 'Cinzel', serif;
     color: #d4af37;
-    font-size: 2rem;
-    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.2rem;
+    animation: glow 3s ease-in-out infinite;
 }
 
 .setting-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
-    border-left: 4px solid #d4af37;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+    border-left: 5px solid #d4af37;
+    transition: all 0.3s ease;
+    animation: fadeIn 0.8s ease-out backwards;
+}
+
+.setting-item:nth-child(1) { animation-delay: 0.1s; }
+.setting-item:nth-child(2) { animation-delay: 0.2s; }
+.setting-item:nth-child(3) { animation-delay: 0.3s; }
+.setting-item:nth-child(4) { animation-delay: 0.4s; }
+
+.setting-item:hover {
+    background: rgba(0, 0, 0, 0.6);
+    border-left-color: #fff;
+    transform: translateX(10px);
+    box-shadow: 0 5px 25px rgba(212, 175, 55, 0.3);
 }
 
 .setting-info h3 {
+    font-family: 'Cinzel', serif;
     color: #d4af37;
-    margin-bottom: 0.5rem;
-    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+    font-size: 1.5rem;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
 }
 
 .setting-info p {
     color: #b8860b;
-    font-size: 0.9rem;
+    font-size: 1rem;
+    font-style: italic;
 }
 
 .toggle {
     position: relative;
-    width: 60px;
-    height: 30px;
-    background: #2a1810;
-    border-radius: 15px;
+    width: 70px;
+    height: 35px;
+    background: rgba(42, 24, 16, 0.8);
+    border-radius: 20px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.4s ease;
+    border: 2px solid #8b4513;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
 }
 
 .toggle.active {
     background: linear-gradient(135deg, #b8860b 0%, #d4af37 100%);
+    border-color: #d4af37;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
 }
 
 .toggle-knob {
     position: absolute;
     top: 3px;
     left: 3px;
-    width: 24px;
-    height: 24px;
-    background: white;
+    width: 27px;
+    height: 27px;
+    background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
     border-radius: 50%;
-    transition: all 0.3s;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
 .toggle.active .toggle-knob {
-    left: 33px;
+    left: 38px;
+    box-shadow: 0 2px 10px rgba(212, 175, 55, 0.8);
 }
 
 .slider-container {
@@ -107,68 +171,102 @@
 
 .slider {
     width: 100%;
-    height: 8px;
-    background: #2a1810;
-    border-radius: 4px;
+    height: 10px;
+    background: rgba(42, 24, 16, 0.8);
+    border-radius: 5px;
     outline: none;
     -webkit-appearance: none;
+    border: 2px solid #d4af37;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
 }
 
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    background: #d4af37;
+    width: 25px;
+    height: 25px;
+    background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
     border-radius: 50%;
     cursor: pointer;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
+    border: 2px solid #fff;
+    transition: all 0.3s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 1);
+}
+
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
+    border: 2px solid #fff;
+    transition: all 0.3s ease;
 }
 
 .slider-labels {
     display: flex;
     justify-content: space-between;
-    margin-top: 0.5rem;
+    margin-top: 0.8rem;
     color: #b8860b;
-    font-size: 0.9rem;
+    font-size: 1rem;
+    font-style: italic;
 }
 
 .slider-value {
     text-align: center;
     color: #d4af37;
-    margin-top: 0.5rem;
-    font-size: 1.1rem;
+    margin-top: 1rem;
+    font-size: 1.3rem;
+    font-family: 'Cinzel', serif;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    font-weight: bold;
 }
 
 .top-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
-    background: rgba(0, 0, 0, 0.3);
+    padding: 1.5rem 2rem;
+    background: linear-gradient(180deg, rgba(42, 24, 16, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+    animation: fadeIn 0.8s ease-out;
+}
+
+.config-title {
+    font-family: 'Cinzel', serif;
+    color: #d4af37;
+    font-size: 2.5rem;
+    animation: glow 3s ease-in-out infinite;
+    letter-spacing: 0.2rem;
 }
 {% endblock %}
 
 {% block content %}
 <div class="top-bar">
-    <button class="btn" onclick="location.href='/'">🏠</button>
-    <h1 style="color: #d4af37; font-size: 2rem;">⚙️ Grimoire Configuration</h1>
+    <button class="btn" onclick="transitionToPage('/')">🏠</button>
+    <h1 class="config-title">⚙️ Grimoire Configuration</h1>
     <div></div>
 </div>
 
 <div class="container">
     <div class="tabs">
-        <div class="tab active" onclick="switchTab('gameplay')">🎮 Gameplay</div>
-        <div class="tab" onclick="switchTab('audio')">🔊 Audio</div>
-        <div class="tab" onclick="switchTab('display')">👁️ Display</div>
-        <div class="tab" onclick="switchTab('about')">ℹ️ About</div>
+        <div class="tab active" onclick="switchTab(this, 'gameplay')">🎮 Gameplay</div>
+        <div class="tab" onclick="switchTab(this, 'audio')">🔊 Audio</div>
+        <div class="tab" onclick="switchTab(this, 'display')">👁️ Display</div>
+        <div class="tab" onclick="switchTab(this, 'about')">ℹ️ About</div>
     </div>
     
     <div class="settings-content">
-        <h2 class="section-heading">Gameplay Enchantments</h2>
+        <h2 class="section-heading">⚡ Gameplay Enchantments ⚡</h2>
         
         <div class="setting-item">
             <div class="setting-info" style="flex: 1; margin-right: 2rem;">
                 <h3>📜 Hint Frequency</h3>
-                <div class="slider-container" style="margin-top: 1rem;">
+                <div class="slider-container" style="margin-top: 1.5rem;">
                     <input type="range" min="0" max="100" value="{{ settings.hint_frequency }}" 
                            class="slider" id="hintSlider" 
                            oninput="updateSlider(this.value)">
@@ -217,9 +315,13 @@
 </div>
 
 <script>
-function switchTab(tab) {
-    // Placeholder for tab switching
-    alert('Tab switching to: ' + tab);
+function switchTab(element, tab) {
+    // Visual feedback
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    element.classList.add('active');
+    
+    // You can add different content for each tab here
+    console.log('Switched to tab:', tab);
 }
 
 function updateSlider(value) {
@@ -241,11 +343,22 @@ function toggleSetting(element, setting) {
     element.classList.toggle('active');
     const isActive = element.classList.contains('active');
     
+    // Add click animation
+    element.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        element.style.transform = 'scale(1)';
+    }, 100);
+    
     fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ [setting]: isActive })
     });
 }
+
+// Initialize slider value on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateSlider(document.getElementById('hintSlider').value);
+});
 </script>
 {% endblock %}

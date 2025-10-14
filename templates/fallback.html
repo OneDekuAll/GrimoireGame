@@ -3,100 +3,155 @@
 {% block title %}Magic Disrupted - GrimoireGame{% endblock %}
 
 {% block extra_css %}
+@keyframes errorPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes warningBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
 .fallback-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     min-height: 80vh;
-    gap: 2rem;
+    gap: 3rem;
+    animation: fadeIn 1s ease-out;
 }
 
 .error-card {
-    background: linear-gradient(135deg, #1a0f3e 0%, #0f0a2e 100%);
-    border: 3px solid #dc143c;
-    border-radius: 12px;
-    padding: 3rem;
-    max-width: 800px;
+    background: linear-gradient(135deg, rgba(26, 15, 62, 0.95) 0%, rgba(15, 10, 46, 0.95) 100%);
+    border: 4px solid #dc143c;
+    border-radius: 20px;
+    padding: 4rem;
+    max-width: 900px;
     text-align: center;
+    box-shadow: 
+        0 20px 60px rgba(220, 20, 60, 0.5),
+        inset 0 0 50px rgba(220, 20, 60, 0.1);
+    animation: errorPulse 2s ease-in-out infinite;
 }
 
 .error-icon {
-    font-size: 5rem;
-    margin-bottom: 1rem;
+    font-size: 6rem;
+    margin-bottom: 2rem;
     color: #dc143c;
+    text-shadow: 0 0 30px rgba(220, 20, 60, 0.8);
+    animation: float 3s ease-in-out infinite;
 }
 
 .error-title {
+    font-family: 'Cinzel', serif;
     color: #dc143c;
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 20px rgba(220, 20, 60, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.2rem;
 }
 
 .error-message {
     color: #d4af37;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     margin-bottom: 2rem;
+    font-style: italic;
 }
 
 .warning-box {
-    background: rgba(139, 0, 0, 0.2);
-    border: 2px solid #dc143c;
-    border-radius: 8px;
-    padding: 1.5rem;
+    background: rgba(139, 0, 0, 0.3);
+    border: 3px solid #dc143c;
+    border-radius: 12px;
+    padding: 2rem;
     margin: 2rem 0;
+    animation: warningBlink 2s ease-in-out infinite;
 }
 
 .warning-box p {
     color: #d4af37;
-    line-height: 1.6;
+    line-height: 1.8;
+    font-size: 1.1rem;
 }
 
 .wisdom-card {
-    background: linear-gradient(135deg, #1a0f3e 0%, #0f0a2e 100%);
-    border: 3px solid #d4af37;
-    border-radius: 12px;
-    padding: 2rem;
-    max-width: 800px;
+    background: linear-gradient(135deg, rgba(26, 15, 62, 0.95) 0%, rgba(15, 10, 46, 0.95) 100%);
+    border: 4px solid #d4af37;
+    border-radius: 20px;
+    padding: 3rem;
+    max-width: 900px;
     text-align: center;
+    box-shadow: 
+        0 20px 60px rgba(212, 175, 55, 0.5),
+        inset 0 0 50px rgba(212, 175, 55, 0.1);
+    animation: fadeIn 1.5s ease-out;
 }
 
 .wisdom-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    animation: float 4s ease-in-out infinite;
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
 }
 
 .wisdom-title {
+    font-family: 'Cinzel', serif;
     color: #d4af37;
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15rem;
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
 }
 
 .wisdom-text {
     color: #b8860b;
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     font-style: italic;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.8;
 }
 
 .wisdom-author {
     color: #90ee90;
-    font-size: 0.9rem;
+    font-size: 1rem;
+    font-style: italic;
+    text-shadow: 0 0 10px rgba(144, 238, 144, 0.3);
 }
 
 .action-buttons {
     display: flex;
-    gap: 1rem;
+    gap: 2rem;
     justify-content: center;
     margin-top: 2rem;
+    flex-wrap: wrap;
 }
+
+.scroll-decoration {
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0.3;
+    animation: float 5s ease-in-out infinite;
+}
+
+.scroll-decoration:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+.scroll-decoration:nth-child(2) { top: 20%; right: 15%; animation-delay: 1s; }
+.scroll-decoration:nth-child(3) { bottom: 15%; left: 20%; animation-delay: 2s; }
+.scroll-decoration:nth-child(4) { bottom: 25%; right: 10%; animation-delay: 3s; }
 {% endblock %}
 
 {% block content %}
+<div class="scroll-decoration">📜</div>
+<div class="scroll-decoration">✨</div>
+<div class="scroll-decoration">🔮</div>
+<div class="scroll-decoration">⚗️</div>
+
 <div class="fallback-container">
     <div class="error-card">
         <div class="error-icon">💎</div>
-        <h1 class="error-title">Magic Disrupted</h1>
+        <h1 class="error-title">⚡ Magic Disrupted ⚡</h1>
         <p class="error-message">Oops! The Grimoire's mystical connection has faded...</p>
         
         <div class="warning-box">
@@ -106,16 +161,22 @@
     
     <div class="wisdom-card">
         <div class="wisdom-icon">✨</div>
-        <h2 class="wisdom-title">Ancient Wisdom Scroll</h2>
+        <h2 class="wisdom-title">📖 Ancient Wisdom Scroll 📖</h2>
         <p class="wisdom-text">"Save your game frequently, especially before major decisions"</p>
         <p class="wisdom-author">— From the Guild of Anonymous Adventurers</p>
     </div>
     
     <div class="action-buttons">
-        <button class="btn btn-green" onclick="location.href='/settings'">⚙️ Adjust Grimoire Settings</button>
-        <button class="btn" onclick="location.reload()">🔄 Try the Magic Again</button>
+        <button class="btn btn-green" onclick="transitionToPage('/settings')">⚙️ Adjust Grimoire Settings</button>
+        <button class="btn" onclick="tryAgain()">🔄 Try the Magic Again</button>
     </div>
     
-    <button class="btn btn-danger" style="margin-top: 1rem;" onclick="location.href='/'">🏠 Return to Sanctum</button>
+    <button class="btn btn-danger" style="margin-top: 1rem;" onclick="transitionToPage('/')">🏠 Return to Sanctum</button>
 </div>
+
+<script>
+function tryAgain() {
+    location.reload();
+}
+</script>
 {% endblock %}

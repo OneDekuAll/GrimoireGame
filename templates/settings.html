@@ -108,6 +108,7 @@
 .setting-item:nth-child(2) { animation-delay: 0.2s; }
 .setting-item:nth-child(3) { animation-delay: 0.3s; }
 .setting-item:nth-child(4) { animation-delay: 0.4s; }
+.setting-item:nth-child(5) { animation-delay: 0.5s; }
 
 .setting-item:hover {
     background: rgba(0, 0, 0, 0.6);
@@ -243,6 +244,79 @@
     animation: glow 3s ease-in-out infinite;
     letter-spacing: 0.2rem;
 }
+
+.theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.theme-card {
+    background: rgba(0, 0, 0, 0.4);
+    border: 3px solid #d4af37;
+    border-radius: 12px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.theme-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.5);
+}
+
+.theme-card.selected {
+    border-color: #90ee90;
+    box-shadow: 0 0 30px rgba(144, 238, 144, 0.6);
+    background: rgba(144, 238, 144, 0.1);
+}
+
+.theme-preview {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.color-swatch {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.theme-name {
+    font-family: 'Cinzel', serif;
+    color: #d4af37;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.theme-card.selected .theme-name {
+    color: #90ee90;
+}
+
+.apply-theme-btn {
+    margin-top: 2rem;
+    width: 100%;
+    background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 100%);
+    color: #d4af37;
+    border: 2px solid #4a7c2c;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.apply-theme-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(74, 124, 44, 0.6);
+}
 {% endblock %}
 
 {% block content %}
@@ -255,73 +329,131 @@
 <div class="container">
     <div class="tabs">
         <div class="tab active" onclick="switchTab(this, 'gameplay')">🎮 Gameplay</div>
+        <div class="tab" onclick="switchTab(this, 'appearance')">🎨 Appearance</div>
         <div class="tab" onclick="switchTab(this, 'audio')">🔊 Audio</div>
-        <div class="tab" onclick="switchTab(this, 'display')">👁️ Display</div>
         <div class="tab" onclick="switchTab(this, 'about')">ℹ️ About</div>
     </div>
     
-    <div class="settings-content">
-        <h2 class="section-heading">⚡ Gameplay Enchantments ⚡</h2>
-        
-        <div class="setting-item">
-            <div class="setting-info" style="flex: 1; margin-right: 2rem;">
-                <h3>📜 Hint Frequency</h3>
-                <div class="slider-container" style="margin-top: 1.5rem;">
-                    <input type="range" min="0" max="100" value="{{ settings.hint_frequency }}" 
-                           class="slider" id="hintSlider" 
-                           oninput="updateSlider(this.value)">
-                    <div class="slider-labels">
-                        <span>Rare</span>
-                        <span>Abundant</span>
+    <div class="settings-content" id="settingsContent">
+        <div id="gameplayTab">
+            <h2 class="section-heading">⚡ Gameplay Enchantments ⚡</h2>
+            
+            <div class="setting-item">
+                <div class="setting-info" style="flex: 1; margin-right: 2rem;">
+                    <h3>📜 Hint Frequency</h3>
+                    <div class="slider-container" style="margin-top: 1.5rem;">
+                        <input type="range" min="0" max="100" value="{{ settings.hint_frequency }}" 
+                               class="slider" id="hintSlider" 
+                               oninput="updateSlider(this.value)">
+                        <div class="slider-labels">
+                            <span>Rare</span>
+                            <span>Abundant</span>
+                        </div>
+                        <div class="slider-value" id="sliderValue">Medium</div>
                     </div>
-                    <div class="slider-value" id="sliderValue">Medium</div>
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>✨ Auto-Hints</h3>
+                    <p>Receive hints automatically when stuck</p>
+                </div>
+                <div class="toggle {% if settings.auto_hints %}active{% endif %}" 
+                     onclick="toggleSetting(this, 'auto_hints')">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>💎 Smart Hints</h3>
+                    <p>Contextual hints based on your progress</p>
+                </div>
+                <div class="toggle {% if settings.smart_hints %}active{% endif %}" 
+                     onclick="toggleSetting(this, 'smart_hints')">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>📜 Community Tips</h3>
+                    <p>Show tips from other adventurers</p>
+                </div>
+                <div class="toggle {% if settings.community_tips %}active{% endif %}" 
+                     onclick="toggleSetting(this, 'community_tips')">
+                    <div class="toggle-knob"></div>
                 </div>
             </div>
         </div>
-        
-        <div class="setting-item">
-            <div class="setting-info">
-                <h3>✨ Auto-Hints</h3>
-                <p>Receive hints automatically when stuck</p>
+
+        <div id="appearanceTab" style="display: none;">
+            <h2 class="section-heading">🎨 Color Themes 🎨</h2>
+            
+            <div class="theme-grid">
+                {% for theme_key, theme_data in themes.items() %}
+                <div class="theme-card {% if settings.theme == theme_key %}selected{% endif %}" 
+                     onclick="selectTheme('{{ theme_key }}')">
+                    <div class="theme-preview">
+                        <div class="color-swatch" style="background: {{ theme_data.primary }};"></div>
+                        <div class="color-swatch" style="background: {{ theme_data.secondary }};"></div>
+                        <div class="color-swatch" style="background: {{ theme_data.accent }};"></div>
+                    </div>
+                    <div class="theme-name">{{ theme_data.name }}</div>
+                </div>
+                {% endfor %}
             </div>
-            <div class="toggle {% if settings.auto_hints %}active{% endif %}" 
-                 onclick="toggleSetting(this, 'auto_hints')">
-                <div class="toggle-knob"></div>
-            </div>
-        </div>
-        
-        <div class="setting-item">
-            <div class="setting-info">
-                <h3>💎 Smart Hints</h3>
-                <p>Contextual hints based on your progress</p>
-            </div>
-            <div class="toggle {% if settings.smart_hints %}active{% endif %}" 
-                 onclick="toggleSetting(this, 'smart_hints')">
-                <div class="toggle-knob"></div>
-            </div>
-        </div>
-        
-        <div class="setting-item">
-            <div class="setting-info">
-                <h3>📜 Community Tips</h3>
-                <p>Show tips from other adventurers</p>
-            </div>
-            <div class="toggle {% if settings.community_tips %}active{% endif %}" 
-                 onclick="toggleSetting(this, 'community_tips')">
-                <div class="toggle-knob"></div>
-            </div>
+            
+            <button class="apply-theme-btn" onclick="applyTheme()">✨ Apply Theme ✨</button>
         </div>
     </div>
 </div>
 
 <script>
+let selectedTheme = '{{ settings.theme }}';
+
 function switchTab(element, tab) {
     // Visual feedback
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     element.classList.add('active');
     
-    // You can add different content for each tab here
-    console.log('Switched to tab:', tab);
+    // Hide all tabs
+    document.getElementById('gameplayTab').style.display = 'none';
+    document.getElementById('appearanceTab').style.display = 'none';
+    
+    // Show selected tab
+    if (tab === 'gameplay') {
+        document.getElementById('gameplayTab').style.display = 'block';
+    } else if (tab === 'appearance') {
+        document.getElementById('appearanceTab').style.display = 'block';
+    } else {
+        alert('Tab: ' + tab + ' - Coming soon!');
+        document.getElementById('gameplayTab').style.display = 'block';
+        document.querySelectorAll('.tab')[0].classList.add('active');
+    }
+}
+
+function selectTheme(themeKey) {
+    selectedTheme = themeKey;
+    
+    // Update visual selection
+    document.querySelectorAll('.theme-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    event.target.closest('.theme-card').classList.add('selected');
+}
+
+function applyTheme() {
+    fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ theme: selectedTheme })
+    })
+    .then(() => {
+        // Reload to apply new theme
+        transitionToPage('/settings');
+    });
 }
 
 function updateSlider(value) {

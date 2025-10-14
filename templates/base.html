@@ -68,8 +68,6 @@
         
         body {
             font-family: 'IM Fell English', serif;
-            background: #0a0506;
-            color: #d4af37;
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
@@ -83,9 +81,8 @@
             width: 100%;
             height: 100%;
             background-image: 
-                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" /><feColorMatrix values="0.3 0.2 0.1 0 0  0.3 0.2 0.1 0 0  0.3 0.2 0.1 0 0  0 0 0 0.6 0"/></filter><rect width="300" height="300" filter="url(%23noise)" opacity="0.4"/></svg>'),
-                linear-gradient(135deg, rgba(139, 69, 19, 0.08) 0%, rgba(42, 24, 16, 0.12) 50%, rgba(26, 15, 10, 0.15) 100%);
-            opacity: 0.5;
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" /><feColorMatrix values="0.3 0.2 0.1 0 0  0.3 0.2 0.1 0 0  0.3 0.2 0.1 0 0  0 0 0 0.6 0"/></filter><rect width="300" height="300" filter="url(%23noise)" opacity="0.4"/></svg>');
+            opacity: 0.3;
             pointer-events: none;
             z-index: 0;
         }
@@ -110,7 +107,6 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.3) 0%, rgba(139, 0, 139, 0.5) 50%, rgba(0, 0, 0, 0.9) 100%);
             opacity: 0;
             pointer-events: none;
             z-index: 9999;
@@ -129,7 +125,6 @@
         .header {
             text-align: center;
             padding: 3rem 2rem;
-            background: linear-gradient(180deg, rgba(42, 24, 16, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
             position: relative;
             animation: fadeIn 1s ease-out;
         }
@@ -137,7 +132,6 @@
         .header h1 {
             font-family: 'Cinzel', serif;
             font-size: 4rem;
-            color: #d4af37;
             animation: glow 3s ease-in-out infinite;
             letter-spacing: 0.3rem;
             margin-bottom: 1rem;
@@ -145,7 +139,6 @@
         }
         
         .header p {
-            color: #b8860b;
             font-size: 1.5rem;
             font-style: italic;
             animation: fadeIn 1.5s ease-out;
@@ -159,8 +152,6 @@
         }
         
         .card {
-            background: linear-gradient(135deg, rgba(26, 15, 62, 0.95) 0%, rgba(15, 10, 46, 0.95) 100%);
-            border: 3px solid #d4af37;
             border-radius: 15px;
             padding: 2rem;
             margin-bottom: 2rem;
@@ -179,7 +170,6 @@
             left: -2px;
             right: -2px;
             bottom: -2px;
-            background: linear-gradient(45deg, #d4af37, #b8860b, #d4af37);
             border-radius: 15px;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -200,9 +190,7 @@
         }
         
         .btn {
-            background: linear-gradient(135deg, #b8860b 0%, #d4af37 100%);
             color: #1a0f3e;
-            border: 2px solid #d4af37;
             padding: 1rem 2.5rem;
             border-radius: 10px;
             font-weight: bold;
@@ -237,7 +225,6 @@
         .btn:hover {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 10px 30px rgba(212, 175, 55, 0.6);
-            border-color: #fff;
         }
         
         .btn:active {
@@ -247,7 +234,7 @@
         .btn-danger {
             background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
             color: white;
-            border-color: #dc143c;
+            border: 2px solid #dc143c;
         }
         
         .btn-danger:hover {
@@ -257,12 +244,10 @@
         
         .btn-green {
             background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 100%);
-            color: #d4af37;
-            border-color: #4a7c2c;
+            border: 2px solid #4a7c2c;
         }
         
         .btn-green:hover {
-            border-color: #90ee90;
             box-shadow: 0 10px 30px rgba(74, 124, 44, 0.6);
         }
         
@@ -271,9 +256,7 @@
             padding: 1rem;
             margin-bottom: 1rem;
             background: rgba(0, 0, 0, 0.5);
-            border: 2px solid #d4af37;
             border-radius: 10px;
-            color: #d4af37;
             font-size: 1.1rem;
             font-family: 'IM Fell English', serif;
             transition: all 0.3s ease;
@@ -281,13 +264,11 @@
         
         input:focus, textarea:focus {
             outline: none;
-            border-color: #fff;
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
             background: rgba(0, 0, 0, 0.7);
         }
         
         input::placeholder, textarea::placeholder {
-            color: #b8860b;
             font-style: italic;
         }
         
@@ -305,7 +286,6 @@
             position: absolute;
             width: 3px;
             height: 3px;
-            background: #d4af37;
             border-radius: 50%;
             animation: float 6s infinite ease-in-out;
             opacity: 0.6;
@@ -314,7 +294,54 @@
         {% block extra_css %}{% endblock %}
     </style>
 </head>
-<body>
+<body style="background: linear-gradient(135deg, 
+    color-mix(in srgb, {{ theme.bg_primary }} 80%, #000) 0%, 
+    color-mix(in srgb, {{ theme.bg_secondary }} 80%, #000) 100%); 
+    color: {{ theme.primary }};">
+    <style>
+        /* Dynamic theme colors */
+        body::before {
+            background-image: 
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" /><feColorMatrix values="0.3 0.2 0.1 0 0  0.3 0.2 0.1 0 0  0.3 0.2 0.1 0 0  0 0 0 0.6 0"/></filter><rect width="300" height="300" filter="url(%23noise)" opacity="0.4"/></svg>'),
+                linear-gradient(135deg, {{ theme.secondary }}15 0%, {{ theme.primary }}10 50%, {{ theme.bg_primary }} 100%);
+        }
+        
+        .header { background: linear-gradient(180deg, {{ theme.bg_primary }}cc 0%, rgba(0, 0, 0, 0) 100%); }
+        .header h1 { color: {{ theme.primary }}; }
+        .header p { color: {{ theme.secondary }}; }
+        
+        .card { 
+            background: linear-gradient(135deg, {{ theme.bg_primary }}, {{ theme.bg_secondary }});
+            border: 3px solid {{ theme.primary }};
+        }
+        .card::before { 
+            background: linear-gradient(45deg, {{ theme.primary }}, {{ theme.secondary }}, {{ theme.primary }});
+        }
+        
+        .btn { 
+            background: linear-gradient(135deg, {{ theme.secondary }}, {{ theme.primary }});
+            border: 2px solid {{ theme.primary }};
+        }
+        .btn:hover { border-color: {{ theme.accent }}; }
+        .btn-green { 
+            color: {{ theme.primary }};
+            border-color: {{ theme.accent }};
+        }
+        
+        input, textarea { 
+            border: 2px solid {{ theme.primary }};
+            color: {{ theme.primary }};
+        }
+        input:focus, textarea:focus { border-color: {{ theme.accent }}; }
+        input::placeholder, textarea::placeholder { color: {{ theme.secondary }}; }
+        
+        .particle { background: {{ theme.primary }}; }
+        
+        .page-transition-overlay {
+            background: radial-gradient(circle, {{ theme.primary }}4d 0%, {{ theme.secondary }}80 50%, #000000e6 100%);
+        }
+    </style>
+    
     <div class="magical-particles">
         <div class="particle" style="left: 10%; top: 20%; animation-delay: 0s;"></div>
         <div class="particle" style="left: 85%; top: 40%; animation-delay: 2s;"></div>
@@ -353,6 +380,7 @@
             });
         });
         
+        /* Django template block for extra JavaScript */
         {% block extra_js %}{% endblock %}
     </script>
 </body>

@@ -95,6 +95,13 @@
     text-align: center;
 }
 
+.game-info {
+    color: var(--secondary);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 1rem;
+}
+
 .game-stats {
     display: flex;
     justify-content: space-between;
@@ -156,6 +163,7 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
+    z-index: 10;
 }
 
 .delete-game:hover {
@@ -230,6 +238,19 @@
     padding: 1.5rem 2rem;
     background: linear-gradient(180deg, rgba(42, 24, 16, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
 }
+
+.empty-state {
+    text-align: center;
+    padding: 4rem;
+    color: var(--secondary);
+}
+
+.empty-state h3 {
+    font-family: 'Cinzel', serif;
+    color: var(--primary);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
 </style>
 {% endblock %}
 
@@ -272,29 +293,45 @@
                     <option value="🏆">🏆 Trophy</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label>Genre</label>
+                <input type="text" id="gameGenre" placeholder="RPG, Action, etc...">
+            </div>
+            <div class="form-group">
+                <label>Difficulty</label>
+                <select id="gameDifficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                    <option value="expert">Expert</option>
+                </select>
+            </div>
             <button class="add-game-btn" onclick="addGame()">➕ Add to Library</button>
         </div>
     </div>
 
     <div class="games-grid" id="gamesGrid">
-        {% for game in games %}
-        <div class="game-card" data-status="{{ game.status }}">
-            <span class="status-badge status-{{ game.status }}">{{ game.status }}</span>
-            <div class="game-cover">{{ game.cover }}</div>
-            <h3 class="game-title">{{ game.title }}</h3>
-            <div class="game-stats">
-                <div class="stat">
-                    <div class="stat-label">Hours Played</div>
-                    <div class="stat-value">{{ game.hours_played }}h</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label">Last Played</div>
-                    <div class="stat-value">{{ game.last_played }}</div>
-                </div>
+        {% if games %}
+            {% for game in games %}
+            <div class="game-card" data-status="{{ game.status or 'backlog' }}" onclick="viewGame({{ game.id }}, event)">
+                <span class="status-badge status-{{ game.status or 'backlog' }}">{{ game.status or 'backlog' }}</span>
+                <div class="game-cover">{{ game.cover_image or '🎮' }}</div>
+                <h3 class="game-title">{{ game.name }}</h3>
+                {% if game.genre %}
+                <p class="game-info">Genre: {{ game.genre }}</p>
+                {% endif %}
+                {% if game.difficulty %}
+                <p class="game-info">Difficulty: {{ game.difficulty }}</p>
+                {% endif %}
+                <button class="delete-game" onclick="deleteGame({{ game.id }}, event)">🗑️</button>
             </div>
-            <button class="delete-game" onclick="deleteGame({{ game.id }})">🗑️</button>
-        </div>
-        {% endfor %}
+            {% endfor %}
+        {% else %}
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <h3>📚 Your library is empty</h3>
+                <p>Add your first game using the form above!</p>
+            </div>
+        {% endif %}
     </div>
 </div>
 
@@ -315,9 +352,19 @@ function filterGames(status) {
     });
 }
 
+function viewGame(gameId, event) {
+    // Don't navigate if clicking delete button
+    if (event.target.classList.contains('delete-game')) {
+        return;
+    }
+    transitionToPage('/game/' + gameId);
+}
+
 function addGame() {
     const title = document.getElementById('gameTitle').value;
     const cover = document.getElementById('gameCover').value;
+    const genre = document.getElementById('gameGenre').value;
+    const difficulty = document.getElementById('gameDifficulty').value;
     
     if (!title) {
         alert('Please enter a game title!');
@@ -327,19 +374,34 @@ function addGame() {
     fetch('/api/library', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, cover })
+        body: JSON.stringify({ 
+            title: title,
+            cover: cover,
+            genre: genre,
+            difficulty: difficulty
+        })
     })
     .then(r => r.json())
     .then(() => {
         transitionToPage('/library');
+    })
+    .catch(err => {
+        console.error('Error adding game:', err);
+        alert('Failed to add game. Please try again.');
     });
 }
 
-function deleteGame(id) {
+function deleteGame(id, event) {
+    event.stopPropagation(); // Prevent card click
+    
     if (confirm('Remove this game from your library?')) {
         fetch(`/api/library/${id}`, { method: 'DELETE' })
             .then(() => {
                 transitionToPage('/library');
+            })
+            .catch(err => {
+                console.error('Error deleting game:', err);
+                alert('Failed to delete game. Please try again.');
             });
     }
 }

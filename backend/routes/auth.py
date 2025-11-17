@@ -1,74 +1,93 @@
 # routes/auth.py
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from models.user import User
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from utils.database import db
-from datetime import datetime
+from models.user import User
+from datetime import timedelta
 
 auth_bp = Blueprint('auth', __name__)
-jwt = JWTManager()
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
-    """Register new user"""
+    """Register a new user"""
     try:
-        data = request.get_json()
+        data = request.json
         
-        # Validate input
-        if not all(k in data for k in ['username', 'email', 'password']):
-            return jsonify({'error': 'Missing required fields'}), 400
+        # Validate required fields
+        if not data.get('username'):
+            return jsonify({'error': 'Username is required'}), 400
+        if not data.get('email'):
+            return jsonify({'error': 'Email is required'}), 400
+        if not data.get('password'):
+            return jsonify({'error': 'Password is required'}), 400
         
-        # Check if user exists
+        # Check if user already exists
         if User.query.filter_by(email=data['email']).first():
-            return jsonify({'error': 'Email already registered'}), 409
+            return jsonify({'error': 'Email already registered'}), 400
         
         if User.query.filter_by(username=data['username']).first():
-            return jsonify({'error': 'Username already taken'}), 409
+            return jsonify({'error': 'Username already taken'}), 400
         
-        # Create user
-        user = User(
+        # Create new user
+        new_user = User(
             username=data['username'],
             email=data['email']
         )
-        user.set_password(data['password'])
+        new_user.set_password(data['password'])
         
-        db.session.add(user)
+        db.session.add(new_user)
         db.session.commit()
         
-        # Generate token
-        access_token = create_access_token(identity=user.id)
+        # Create access token
+        access_token = create_access_token(
+            identity=new_user.id,
+            expires_delta=timedelta(days=1)
+        )
         
         return jsonify({
-            'message': 'User created successfully',
+            'message': 'User registered successfully',
             'token': access_token,
-            'user': user.to_dict()
+            'user': new_user.to_dict()
         }), 201
         
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        print(f"Registration error: {str(e)}")  # Debug logging
+        return jsonify({'error': f'Registration failed: {str(e)}'}), 500
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    """Login user"""
+    """Login user with username or email"""
     try:
-        data = request.get_json()
+        data = request.json
         
-        if not all(k in data for k in ['email', 'password']):
-            return jsonify({'error': 'Email and password required'}), 400
+        # Get login identifier (can be username or email)
+        identifier = data.get('email') or data.get('username') or data.get('identifier')
+        password = data.get('password')
         
-        # Find user
-        user = User.query.filter_by(email=data['email']).first()
+        # Validate required fields
+        if not identifier:
+            return jsonify({'error': 'Username or email is required'}), 400
+        if not password:
+            return jsonify({'error': 'Password is required'}), 400
         
-        if not user or not user.check_password(data['password']):
-            return jsonify({'error': 'Invalid credentials'}), 401
+        # Try to find user by email first, then by username
+        user = User.query.filter_by(email=identifier).first()
+        if not user:
+            user = User.query.filter_by(username=identifier).first()
         
-        # Update last login
-        user.last_login = datetime.utcnow()
-        db.session.commit()
+        if not user:
+            return jsonify({'error': 'Invalid username/email or password'}), 401
         
-        # Generate token
-        access_token = create_access_token(identity=user.id)
+        # Check password
+        if not user.check_password(password):
+            return jsonify({'error': 'Invalid username/email or password'}), 401
+        
+        # Create access token
+        access_token = create_access_token(
+            identity=user.id,
+            expires_delta=timedelta(days=1)
+        )
         
         return jsonify({
             'message': 'Login successful',
@@ -77,12 +96,15 @@ def login():
         }), 200
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Login error: {str(e)}")  # Debug logging
+        import traceback
+        traceback.print_exc()  # Print full stack trace
+        return jsonify({'error': f'Login failed: {str(e)}'}), 500
 
-@auth_bp.route('/me', methods=['GET'])
+@auth_bp.route('/profile', methods=['GET'])
 @jwt_required()
-def get_current_user():
-    """Get current user info"""
+def get_profile():
+    """Get current user profile"""
     try:
         user_id = get_jwt_identity()
         user = User.query.get(user_id)
@@ -93,6 +115,52 @@ def get_current_user():
         return jsonify({'user': user.to_dict()}), 200
         
     except Exception as e:
+        print(f"Profile error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@auth_bp.route('/update-profile', methods=['PUT'])
+@jwt_required()
+def update_profile():
+    """Update user profile"""
+    try:
+        user_id = get_jwt_identity()
+        user = User.query.get(user_id)
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        data = request.json
+        
+        # Update username if provided
+        if 'username' in data and data['username']:
+            # Check if username is already taken by another user
+            existing = User.query.filter_by(username=data['username']).first()
+            if existing and existing.id != user_id:
+                return jsonify({'error': 'Username already taken'}), 400
+            user.username = data['username']
+        
+        # Update email if provided
+        if 'email' in data and data['email']:
+            # Check if email is already taken by another user
+            existing = User.query.filter_by(email=data['email']).first()
+            if existing and existing.id != user_id:
+                return jsonify({'error': 'Email already registered'}), 400
+            user.email = data['email']
+        
+        # Update password if provided
+        if 'password' in data and data['password']:
+            user.set_password(data['password'])
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Profile updated successfully',
+            'user': user.to_dict()
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Update profile error: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @auth_bp.route('/preferences', methods=['PATCH'])
@@ -106,13 +174,46 @@ def update_preferences():
         if not user:
             return jsonify({'error': 'User not found'}), 404
         
-        data = request.get_json()
-        user.preferences = data.get('preferences', user.preferences)
+        data = request.json
+        
+        # Update preferences
+        if 'preferences' in data:
+            user.preferences = data['preferences']
+        else:
+            # Update individual preference fields
+            if not user.preferences:
+                user.preferences = {}
+            
+            for key, value in data.items():
+                user.preferences[key] = value
         
         db.session.commit()
         
-        return jsonify({'preferences': user.preferences}), 200
+        return jsonify({
+            'message': 'Preferences updated successfully',
+            'preferences': user.preferences
+        }), 200
         
     except Exception as e:
         db.session.rollback()
+        print(f"Update preferences error: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+@auth_bp.route('/verify', methods=['GET'])
+@jwt_required()
+def verify_token():
+    """Verify if token is valid"""
+    try:
+        user_id = get_jwt_identity()
+        user = User.query.get(user_id)
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        return jsonify({
+            'valid': True,
+            'user': user.to_dict()
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'valid': False, 'error': str(e)}), 401

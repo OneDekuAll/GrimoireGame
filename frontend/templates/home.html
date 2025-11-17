@@ -115,6 +115,43 @@
     letter-spacing: 0.2rem;
     text-transform: uppercase;
 }
+
+.recent-games-section {
+    margin-top: 4rem;
+}
+
+.recent-games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.recent-game-card {
+    background: linear-gradient(135deg, {{ theme.bg_primary }}, {{ theme.bg_secondary }});
+    border: 2px solid {{ theme.primary }};
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.recent-game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(160, 32, 240, 0.4);
+}
+
+.recent-game-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.recent-game-title {
+    font-family: 'Cinzel', serif;
+    color: {{ theme.primary }};
+    font-size: 1.2rem;
+}
 </style>
 
 <div class="header">
@@ -131,7 +168,7 @@
         {% for adventure in adventures %}
         <div class="adventure-card" 
              style="background: linear-gradient(135deg, {{ theme.bg_primary }}, {{ theme.bg_secondary }}); border-color: {{ theme.primary }};"
-             onclick="enterRealm('{{ adventure.name }}')">
+             onclick="transitionToPage('/library')">
             <div class="adventure-icon">
                 {% if loop.index == 1 %}📜
                 {% elif loop.index == 2 %}🗡️
@@ -141,22 +178,31 @@
             <h3 class="adventure-title" style="color: {{ theme.primary }};">{{ adventure.name }}</h3>
             <p class="adventure-desc" style="color: {{ theme.secondary }};">{{ adventure.description }}</p>
             <span class="difficulty-badge">{{ adventure.difficulty }}</span>
-            <span class="enter-realm" style="color: {{ theme.primary }};">→ Enter the realm</span>
+            <span class="enter-realm" style="color: {{ theme.primary }};">→ View in Library</span>
         </div>
         {% endfor %}
     </div>
+
+    {% if games %}
+    <div class="recent-games-section">
+        <div class="title-section">
+            <h2 style="color: {{ theme.accent }};">Your Games</h2>
+        </div>
+        <div class="recent-games-grid">
+            {% for game in games[:4] %}
+            <div class="recent-game-card" onclick="transitionToPage('/game/{{ game.id }}')">
+                <div class="recent-game-icon">{{ game.cover_image or '🎮' }}</div>
+                <h3 class="recent-game-title">{{ game.name }}</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
     
     <div class="bottom-buttons">
         <button class="btn" onclick="transitionToPage('/library')">📚 Game Library</button>
         <button class="btn" onclick="transitionToPage('/quest-grimoire')">📖 Quest Grimoire</button>
         <button class="btn btn-green" onclick="transitionToPage('/settings')">⚙️ Grimoire Settings</button>
-        <button class="btn" onclick="transitionToPage('/fallback')">🏆 Test Fallback</button>
     </div>
 </div>
-
-<script>
-function enterRealm(gameName) {
-    transitionToPage('/game/' + encodeURIComponent(gameName));
-}
-</script>
 {% endblock %}

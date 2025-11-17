@@ -13,7 +13,7 @@ hints_bp = Blueprint('hints', __name__)
 def get_hints(quest_id):
     """Get all hints for a quest"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         quest = Quest.query.join(Game).filter(
             Quest.id == quest_id,
             Game.user_id == user_id
@@ -25,20 +25,19 @@ def get_hints(quest_id):
         hints = Hint.query.filter_by(quest_id=quest_id).order_by(Hint.created_at.asc()).all()
         
         return jsonify({'hints': [hint.to_dict() for hint in hints]}), 200
-        
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@hints_bp.route('/', methods=['POST'])
+@hints_bp.route('', methods=['POST'])
 @jwt_required()
 def create_hint():
     """Create new hint"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         data = request.get_json()
         
         if not all(k in data for k in ['quest_id', 'hint_text']):
-            return jsonify({'error': 'Quest ID and hint text required'}), 400
+            return jsonify({'error': 'Quest ID and hint text are required'}), 400
         
         # Verify quest belongs to user
         quest = Quest.query.join(Game).filter(
@@ -63,7 +62,6 @@ def create_hint():
         db.session.commit()
         
         return jsonify({'hint': hint.to_dict()}), 201
-        
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
@@ -71,9 +69,9 @@ def create_hint():
 @hints_bp.route('/<int:hint_id>', methods=['GET'])
 @jwt_required()
 def get_hint(hint_id):
-    """Get specific hint"""
+    """Get specific hint (and increment view count)"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         hint = Hint.query.join(Quest).join(Game).filter(
             Hint.id == hint_id,
             Game.user_id == user_id
@@ -87,7 +85,6 @@ def get_hint(hint_id):
         db.session.commit()
         
         return jsonify({'hint': hint.to_dict()}), 200
-        
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -96,7 +93,7 @@ def get_hint(hint_id):
 def rate_hint(hint_id):
     """Rate hint helpfulness"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         data = request.get_json()
         
         if 'rating' not in data or not (1 <= data['rating'] <= 5):
@@ -114,7 +111,6 @@ def rate_hint(hint_id):
         db.session.commit()
         
         return jsonify({'hint': hint.to_dict()}), 200
-        
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
@@ -124,7 +120,7 @@ def rate_hint(hint_id):
 def delete_hint(hint_id):
     """Delete hint"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         hint = Hint.query.join(Quest).join(Game).filter(
             Hint.id == hint_id,
             Game.user_id == user_id
@@ -139,7 +135,6 @@ def delete_hint(hint_id):
         db.session.commit()
         
         return jsonify({'message': 'Hint deleted successfully'}), 200
-        
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
@@ -149,7 +144,7 @@ def delete_hint(hint_id):
 def get_hint_stats(game_id):
     """Get hint statistics for a game"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         game = Game.query.filter_by(id=game_id, user_id=user_id).first()
         
         if not game:
@@ -157,15 +152,22 @@ def get_hint_stats(game_id):
         
         hints = Hint.query.join(Quest).filter(Quest.game_id == game_id).all()
         
+        total_hints = len(hints)
+        general_hints = len([h for h in hints if h.hint_type == 'general'])
+        specific_hints = len([h for h in hints if h.hint_type == 'specific'])
+        solution_hints = len([h for h in hints if h.hint_type == 'solution'])
+        
+        rated_hints = [h for h in hints if h.helpfulness_rating]
+        avg_rating = sum(h.helpfulness_rating for h in rated_hints) / len(rated_hints) if rated_hints else None
+        
         stats = {
-            'total_hints': len(hints),
-            'general_hints': len([h for h in hints if h.hint_type == 'general']),
-            'specific_hints': len([h for h in hints if h.hint_type == 'specific']),
-            'solution_hints': len([h for h in hints if h.hint_type == 'solution']),
-            'avg_rating': sum(h.helpfulness_rating for h in hints if h.helpfulness_rating) / len([h for h in hints if h.helpfulness_rating]) if any(h.helpfulness_rating for h in hints) else None
+            'total_hints': total_hints,
+            'general_hints': general_hints,
+            'specific_hints': specific_hints,
+            'solution_hints': solution_hints,
+            'avg_rating': round(avg_rating, 2) if avg_rating else None
         }
         
         return jsonify({'stats': stats}), 200
-        
     except Exception as e:
         return jsonify({'error': str(e)}), 500

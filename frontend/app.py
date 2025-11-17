@@ -1,48 +1,15 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
 from datetime import datetime
+import requests
+from functools import wraps
 
 app = Flask(__name__)
+app.secret_key = 'your-secret-key-change-in-production'
 
-# Game data storage
-quests = [
-    {
-        "id": 1,
-        "title": "Defeat the Shadow Lord",
-        "description": "A legendary quest to defeat the ancient evil.",
-        "progress": 30,
-        "active": True
-    }
-]
+# Backend API URL
+BACKEND_URL = 'http://localhost:5000/api'
 
-settings = {
-    "hint_frequency": 50,
-    "auto_hints": False,
-    "smart_hints": True,
-    "community_tips": True,
-    "theme": "default"
-}
-
-# User's game library
-game_library = [
-    {
-        "id": 1,
-        "title": "Elder Scrolls V: Skyrim",
-        "hours_played": 127,
-        "last_played": "2025-10-12",
-        "status": "playing",
-        "cover": "🐉"
-    },
-    {
-        "id": 2,
-        "title": "The Witcher 3",
-        "hours_played": 89,
-        "last_played": "2025-10-10",
-        "status": "playing",
-        "cover": "🗡️"
-    }
-]
-
-# Color themes - EXPANDED with 38 themes including cosmic
+# Themes (keeping your existing themes)
 themes = {
     "default": {
          "name": "Galaxy Purple",
@@ -406,114 +373,339 @@ themes = {
     }
 }
 
-adventures = [
-    {"name": "Elder Scrolls: Mystic Realms", "difficulty": "Master", "description": "Ancient prophecies await"},
-    {"name": "Witcher's Quest", "difficulty": "Expert", "description": "Hunt monsters in dark forests"},
-    {"name": "Crystal Defenders", "difficulty": "Novice", "description": "Protect the sacred crystals"},
-    {"name": "Guardian's Shield", "difficulty": "Adept", "description": "Defend the realm from darkness"}
-]
+# Auth decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'token' not in session:
+            flash('Please login first', 'warning')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Helper function to make authenticated API calls
+def api_call(endpoint, method='GET', data=None):
+    """Make API call to backend with authentication"""
+    headers = {}
+    if 'token' in session:
+        headers['Authorization'] = f"Bearer {session['token']}"
+    
+    url = f"{BACKEND_URL}{endpoint}"
+    
+    try:
+        if method == 'GET':
+            response = requests.get(url, headers=headers)
+        elif method == 'POST':
+            response = requests.post(url, json=data, headers=headers)
+        elif method == 'PATCH':
+            response = requests.patch(url, json=data, headers=headers)
+        elif method == 'DELETE':
+            response = requests.delete(url, headers=headers)
+        
+        if response.status_code in [200, 201]:
+            return response.json(), None
+        else:
+            return None, response.json().get('error', 'Unknown error')
+    except Exception as e:
+        return None, str(e)
+
+# ========== AUTH ROUTES ==========
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        data = request.get_json() if request.is_json else request.form
+        identifier = data.get('email')  # This field now accepts username or email
+        password = data.get('password')
+        
+        try:
+            response = requests.post(f'{BACKEND_URL}/auth/login', 
+                                    json={'email': identifier, 'password': password})
+            
+            if response.status_code == 200:
+                result = response.json()
+                session['token'] = result['token']
+                session['user'] = result['user']
+                
+                if request.is_json:
+                    return jsonify({'success': True, 'redirect': url_for('home')})
+                return redirect(url_for('home'))
+            else:
+                error = response.json().get('error', 'Login failed')
+                if request.is_json:
+                    return jsonify({'success': False, 'error': error}), 400
+                flash(error, 'danger')
+        except Exception as e:
+            if request.is_json:
+                return jsonify({'success': False, 'error': str(e)}), 500
+            flash(f'Error: {str(e)}', 'danger')
+    
+    current_theme = themes.get('default')
+    return render_template('login.html', theme=current_theme)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        data = request.get_json() if request.is_json else request.form
+        username = data.get('username')
+        email = data.get('email')
+        password = data.get('password')
+        
+        try:
+            response = requests.post(f'{BACKEND_URL}/auth/register',
+                                    json={'username': username, 'email': email, 'password': password})
+            
+            if response.status_code == 201:
+                result = response.json()
+                session['token'] = result['token']
+                session['user'] = result['user']
+                
+                if request.is_json:
+                    return jsonify({'success': True, 'redirect': url_for('home')})
+                return redirect(url_for('home'))
+            else:
+                error = response.json().get('error', 'Registration failed')
+                if request.is_json:
+                    return jsonify({'success': False, 'error': error}), 400
+                flash(error, 'danger')
+        except Exception as e:
+            if request.is_json:
+                return jsonify({'success': False, 'error': str(e)}), 500
+            flash(f'Error: {str(e)}', 'danger')
+    
+    current_theme = themes.get('default')
+    return render_template('register.html', theme=current_theme)
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('Logged out successfully', 'success')
+    return redirect(url_for('login'))
+
+# ========== MAIN ROUTES ==========
 
 @app.route('/')
+@login_required
 def home():
-    current_theme = themes.get(settings['theme'], themes['default'])
-    return render_template('home.html', adventures=adventures, theme=current_theme)
+    current_theme = themes.get(session.get('theme', 'default'), themes['default'])
+    
+    # Get user's games from backend
+    games_data, error = api_call('/games')
+    games = games_data.get('games', []) if games_data else []
+    
+    # Mock adventures for now
+    adventures = [
+        {"name": "Elder Scrolls: Mystic Realms", "difficulty": "Master", "description": "Ancient prophecies await"},
+        {"name": "Witcher's Quest", "difficulty": "Expert", "description": "Hunt monsters in dark forests"},
+        {"name": "Crystal Defenders", "difficulty": "Novice", "description": "Protect the sacred crystals"},
+        {"name": "Guardian's Shield", "difficulty": "Adept", "description": "Defend the realm from darkness"}
+    ]
+    
+    return render_template('home.html', 
+                         adventures=adventures, 
+                         games=games, 
+                         theme=current_theme,
+                         user=session.get('user'))
 
 @app.route('/library')
+@login_required
 def library():
-    current_theme = themes.get(settings['theme'], themes['default'])
-    return render_template('library.html', games=game_library, theme=current_theme)
+    current_theme = themes.get(session.get('theme', 'default'), themes['default'])
+    
+    # Get games from backend
+    games_data, error = api_call('/games')
+    if error:
+        flash(f'Error loading games: {error}', 'danger')
+        games = []
+    else:
+        games = games_data.get('games', [])
+    
+    return render_template('library.html', 
+                         games=games, 
+                         theme=current_theme,
+                         user=session.get('user'))
 
 @app.route('/quest-grimoire')
+@login_required
 def quest_grimoire():
-    current_theme = themes.get(settings['theme'], themes['default'])
-    return render_template('quest_grimoire.html', quests=quests, theme=current_theme)
+    current_theme = themes.get(session.get('theme', 'default'), themes['default'])
+    
+    # Get all quests from all games
+    games_data, error = api_call('/games')
+    quests = []
+    
+    if games_data and 'games' in games_data:
+        for game in games_data['games']:
+            quests_data, error = api_call(f'/quests/game/{game["id"]}')
+            if quests_data and 'quests' in quests_data:
+                for quest in quests_data['quests']:
+                    quest['game_name'] = game['name']
+                    quests.append(quest)
+    
+    return render_template('quest_grimoire.html', 
+                         quests=quests, 
+                         theme=current_theme,
+                         user=session.get('user'))
+
+@app.route('/game/<int:game_id>')
+@login_required
+def game_play(game_id):
+    current_theme = themes.get(session.get('theme', 'default'), themes['default'])
+    
+    # Get game details from backend
+    game_data, error = api_call(f'/games/{game_id}')
+    if error:
+        flash(f'Game not found: {error}', 'danger')
+        return redirect(url_for('library'))
+    
+    game = game_data.get('game', {})
+    
+    # Get quests for this game
+    quests_data, error = api_call(f'/quests/game/{game_id}')
+    quests = quests_data.get('quests', []) if quests_data else []
+    
+    return render_template('game_play.html', 
+                         game=game, 
+                         quests=quests,
+                         theme=current_theme,
+                         user=session.get('user'))
 
 @app.route('/settings')
+@login_required
 def settings_page():
-    current_theme = themes.get(settings['theme'], themes['default'])
-    return render_template('settings.html', settings=settings, themes=themes, theme=current_theme)
-
-@app.route('/game/<game_name>')
-def game_play(game_name):
-    current_theme = themes.get(settings['theme'], themes['default'])
-    return render_template('game_play.html', game_name=game_name, theme=current_theme)
+    current_theme = themes.get(session.get('theme', 'default'), themes['default'])
+    
+    # Get user preferences from backend
+    user_data = session.get('user', {})
+    settings = user_data.get('preferences', {
+        'hint_frequency': 50,
+        'auto_hints': False,
+        'smart_hints': True,
+        'community_tips': True,
+        'theme': 'default'
+    })
+    
+    return render_template('settings.html', 
+                         settings=settings, 
+                         themes=themes, 
+                         theme=current_theme,
+                         user=session.get('user'))
 
 @app.route('/fallback')
 def fallback():
-    current_theme = themes.get(settings['theme'], themes['default'])
+    current_theme = themes.get(session.get('theme', 'default'), themes['default'])
     return render_template('fallback.html', theme=current_theme)
 
-# API endpoints
+# ========== API ENDPOINTS ==========
+
 @app.route('/api/library', methods=['GET', 'POST'])
+@login_required
 def api_library():
     if request.method == 'POST':
         data = request.json
-        game = {
-            "id": len(game_library) + 1,
-            "title": data.get('title'),
-            "hours_played": 0,
-            "last_played": datetime.now().strftime("%Y-%m-%d"),
-            "status": "backlog",
-            "cover": data.get('cover', '🎮')
+        game_data = {
+            'name': data.get('title'),
+            'difficulty': data.get('difficulty', 'medium'),
+            'genre': data.get('genre', 'Unknown'),
+            'cover_image': data.get('cover')
         }
-        game_library.append(game)
-        return jsonify(game), 201
-    return jsonify(game_library)
+        
+        result, error = api_call('/games', method='POST', data=game_data)
+        if error:
+            return jsonify({"error": error}), 400
+        return jsonify(result), 201
+    
+    # GET request
+    result, error = api_call('/games')
+    if error:
+        return jsonify({"error": error}), 400
+    return jsonify(result.get('games', []))
 
 @app.route('/api/library/<int:game_id>', methods=['PUT', 'DELETE'])
+@login_required
 def api_library_detail(game_id):
-    game = next((g for g in game_library if g['id'] == game_id), None)
-    
-    if not game:
-        return jsonify({"error": "Game not found"}), 404
-    
     if request.method == 'PUT':
         data = request.json
-        game.update(data)
-        return jsonify(game)
+        result, error = api_call(f'/games/{game_id}', method='PATCH', data=data)
+        if error:
+            return jsonify({"error": error}), 400
+        return jsonify(result)
     
     if request.method == 'DELETE':
-        game_library.remove(game)
+        result, error = api_call(f'/games/{game_id}', method='DELETE')
+        if error:
+            return jsonify({"error": error}), 400
         return jsonify({"message": "Game removed"}), 200
 
 @app.route('/api/quests', methods=['GET', 'POST'])
+@login_required
 def api_quests():
     if request.method == 'POST':
         data = request.json
-        quest = {
-            "id": len(quests) + 1,
-            "title": data.get('title'),
-            "description": data.get('description'),
-            "progress": 0,
-            "active": False
+        quest_data = {
+            'game_id': data.get('game_id'),
+            'name': data.get('title'),
+            'description': data.get('description'),
+            'difficulty': data.get('difficulty', 5)
         }
-        quests.append(quest)
-        return jsonify(quest), 201
-    return jsonify(quests)
+        
+        result, error = api_call('/quests', method='POST', data=quest_data)
+        if error:
+            return jsonify({"error": error}), 400
+        return jsonify(result), 201
+    
+    # Get all quests from all games
+    games_data, error = api_call('/games')
+    all_quests = []
+    
+    if games_data and 'games' in games_data:
+        for game in games_data['games']:
+            quests_data, error = api_call(f'/quests/game/{game["id"]}')
+            if quests_data and 'quests' in quests_data:
+                all_quests.extend(quests_data['quests'])
+    
+    return jsonify(all_quests)
 
 @app.route('/api/quests/<int:quest_id>', methods=['PUT', 'DELETE'])
+@login_required
 def api_quest_detail(quest_id):
-    quest = next((q for q in quests if q['id'] == quest_id), None)
-    
-    if not quest:
-        return jsonify({"error": "Quest not found"}), 404
-    
     if request.method == 'PUT':
         data = request.json
-        quest.update(data)
-        return jsonify(quest)
+        result, error = api_call(f'/quests/{quest_id}', method='PATCH', data=data)
+        if error:
+            return jsonify({"error": error}), 400
+        return jsonify(result)
     
     if request.method == 'DELETE':
-        quests.remove(quest)
+        result, error = api_call(f'/quests/{quest_id}', method='DELETE')
+        if error:
+            return jsonify({"error": error}), 400
         return jsonify({"message": "Quest deleted"}), 200
 
 @app.route('/api/settings', methods=['GET', 'POST'])
+@login_required
 def api_settings():
-    global settings
     if request.method == 'POST':
-        settings.update(request.json)
-        return jsonify(settings)
-    return jsonify(settings)
+        data = request.json
+        # Update theme in session
+        if 'theme' in data:
+            session['theme'] = data['theme']
+        
+        # Update preferences in backend
+        result, error = api_call('/auth/preferences', method='PATCH', data={'preferences': data})
+        if error:
+            return jsonify({"error": error}), 400
+        
+        # Update session user data
+        if 'user' in session:
+            session['user']['preferences'] = data
+        
+        return jsonify(data)
+    
+    # GET request
+    user = session.get('user', {})
+    return jsonify(user.get('preferences', {}))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Run frontend on port 3000
+    app.run(debug=True, port=3000)

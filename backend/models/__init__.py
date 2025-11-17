@@ -1,7 +1,6 @@
 # models/__init__.py
-from .user import User
-from .game import Game
-from .quest import Quest
-from .hint import Hint
+from models.user import User
+from models.game import Game
+from models.quest import Quest
 
-__all__ = ['User', 'Game', 'Quest', 'Hint']
+__all__ = ['User', 'Game', 'Quest']

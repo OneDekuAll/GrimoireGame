@@ -1,35 +1,89 @@
 # routes/quests.py
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models.game import Game
-from models.quest import Quest
-from models.hint import Hint
 from utils.database import db
-from datetime import datetime
+from models.quest import Quest
+from models.game import Game
 
 quests_bp = Blueprint('quests', __name__)
 
-@quests_bp.route('/game/<int:game_id>', methods=['GET'])
+@quests_bp.route('', methods=['POST'])
 @jwt_required()
-def get_quests(game_id):
-    """Get all quests for a game"""
+def create_quest():
+    """Create a new quest"""
     try:
+        data = request.json
         user_id = get_jwt_identity()
-        game = Game.query.filter_by(id=game_id, user_id=user_id).first()
         
+        # Validate required fields
+        if not data.get('game_id'):
+            return jsonify({'error': 'game_id is required'}), 400
+        
+        if not data.get('name') and not data.get('title'):
+            return jsonify({'error': 'Quest name is required'}), 400
+        
+        # Check if game exists
+        game = Game.query.get(data.get('game_id'))
         if not game:
             return jsonify({'error': 'Game not found'}), 404
         
-        quests = Quest.query.filter_by(game_id=game_id).order_by(Quest.created_at.desc()).all()
+        # Create new quest
+        new_quest = Quest(
+            game_id=data.get('game_id'),
+            name=data.get('name') or data.get('title'),
+            description=data.get('description', ''),
+            difficulty=data.get('difficulty', 5),
+            status='active',
+            completed=False
+        )
         
-        quests_data = []
-        for quest in quests:
-            quest_dict = quest.to_dict()
-            total_hints = Hint.query.filter_by(quest_id=quest.id).count()
-            quest_dict['total_hints'] = total_hints
-            quests_data.append(quest_dict)
+        db.session.add(new_quest)
+        db.session.commit()
         
-        return jsonify({'quests': quests_data}), 200
+        return jsonify({
+            'message': 'Quest created successfully',
+            'quest': {
+                'id': new_quest.id,
+                'name': new_quest.name,
+                'description': new_quest.description,
+                'difficulty': new_quest.difficulty,
+                'status': new_quest.status,
+                'completed': new_quest.completed,
+                'game_id': new_quest.game_id
+            }
+        }), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@quests_bp.route('/game/<int:game_id>', methods=['GET'])
+@jwt_required()
+def get_game_quests(game_id):
+    """Get all quests for a specific game"""
+    try:
+        user_id = get_jwt_identity()
+        
+        # Check if game exists
+        game = Game.query.get(game_id)
+        if not game:
+            return jsonify({'error': 'Game not found'}), 404
+        
+        # Get all quests for this game
+        quests = Quest.query.filter_by(game_id=game_id).all()
+        
+        return jsonify({
+            'quests': [{
+                'id': q.id,
+                'name': q.name,
+                'description': q.description,
+                'difficulty': q.difficulty,
+                'status': q.status,
+                'completed': q.completed,
+                'game_id': q.game_id,
+                'created_at': q.created_at.isoformat() if hasattr(q, 'created_at') and q.created_at else None
+            } for q in quests]
+        }), 200
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -37,91 +91,60 @@ def get_quests(game_id):
 @quests_bp.route('/<int:quest_id>', methods=['GET'])
 @jwt_required()
 def get_quest(quest_id):
-    """Get single quest"""
+    """Get a single quest"""
     try:
         user_id = get_jwt_identity()
-        quest = Quest.query.join(Game).filter(
-            Quest.id == quest_id,
-            Game.user_id == user_id
-        ).first()
+        quest = Quest.query.get_or_404(quest_id)
         
-        if not quest:
-            return jsonify({'error': 'Quest not found'}), 404
-        
-        quest_dict = quest.to_dict()
-        total_hints = Hint.query.filter_by(quest_id=quest.id).count()
-        quest_dict['total_hints'] = total_hints
-        
-        return jsonify({'quest': quest_dict}), 200
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@quests_bp.route('/', methods=['POST'])
-@jwt_required()
-def create_quest():
-    """Create new quest"""
-    try:
-        user_id = get_jwt_identity()
-        data = request.get_json()
-        
-        if not all(k in data for k in ['game_id', 'name']):
-            return jsonify({'error': 'Game ID and name required'}), 400
-        
-        # Verify game belongs to user
-        game = Game.query.filter_by(id=data['game_id'], user_id=user_id).first()
-        if not game:
-            return jsonify({'error': 'Game not found'}), 404
-        
-        quest = Quest(
-            game_id=data['game_id'],
-            name=data['name'],
-            description=data.get('description', ''),
-            difficulty=data.get('difficulty', 5)
-        )
-        
-        db.session.add(quest)
-        db.session.commit()
-        
-        return jsonify({'quest': quest.to_dict()}), 201
+        return jsonify({
+            'quest': {
+                'id': quest.id,
+                'name': quest.name,
+                'description': quest.description,
+                'difficulty': quest.difficulty,
+                'status': quest.status,
+                'completed': quest.completed,
+                'game_id': quest.game_id
+            }
+        }), 200
         
     except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': str(e)}), 404
 
 @quests_bp.route('/<int:quest_id>', methods=['PATCH'])
 @jwt_required()
 def update_quest(quest_id):
-    """Update quest"""
+    """Update a quest"""
     try:
         user_id = get_jwt_identity()
-        quest = Quest.query.join(Game).filter(
-            Quest.id == quest_id,
-            Game.user_id == user_id
-        ).first()
+        quest = Quest.query.get_or_404(quest_id)
+        data = request.json
         
-        if not quest:
-            return jsonify({'error': 'Quest not found'}), 404
-        
-        data = request.get_json()
-        
+        # Update fields if provided
         if 'name' in data:
             quest.name = data['name']
         if 'description' in data:
             quest.description = data['description']
-        if 'status' in data:
-            quest.status = data['status']
         if 'difficulty' in data:
             quest.difficulty = data['difficulty']
-        if 'notes' in data:
-            quest.notes = data['notes']
-        if 'completion_time' in data:
-            quest.completion_time = data['completion_time']
+        if 'status' in data:
+            quest.status = data['status']
+        if 'completed' in data:
+            quest.completed = data['completed']
         
-        quest.updated_at = datetime.utcnow()
         db.session.commit()
         
-        return jsonify({'quest': quest.to_dict()}), 200
+        return jsonify({
+            'message': 'Quest updated successfully',
+            'quest': {
+                'id': quest.id,
+                'name': quest.name,
+                'description': quest.description,
+                'difficulty': quest.difficulty,
+                'status': quest.status,
+                'completed': quest.completed
+            }
+        }), 200
         
     except Exception as e:
         db.session.rollback()
@@ -130,16 +153,10 @@ def update_quest(quest_id):
 @quests_bp.route('/<int:quest_id>', methods=['DELETE'])
 @jwt_required()
 def delete_quest(quest_id):
-    """Delete quest"""
+    """Delete a quest"""
     try:
         user_id = get_jwt_identity()
-        quest = Quest.query.join(Game).filter(
-            Quest.id == quest_id,
-            Game.user_id == user_id
-        ).first()
-        
-        if not quest:
-            return jsonify({'error': 'Quest not found'}), 404
+        quest = Quest.query.get_or_404(quest_id)
         
         db.session.delete(quest)
         db.session.commit()
@@ -150,53 +167,58 @@ def delete_quest(quest_id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
-@quests_bp.route('/<int:quest_id>/start', methods=['POST'])
+@quests_bp.route('/<int:quest_id>/complete', methods=['POST'])
 @jwt_required()
-def start_quest(quest_id):
-    """Mark quest as started"""
+def complete_quest(quest_id):
+    """Mark a quest as complete"""
     try:
         user_id = get_jwt_identity()
-        quest = Quest.query.join(Game).filter(
-            Quest.id == quest_id,
-            Game.user_id == user_id
-        ).first()
+        quest = Quest.query.get_or_404(quest_id)
         
-        if not quest:
-            return jsonify({'error': 'Quest not found'}), 404
+        quest.completed = True
+        quest.status = 'completed'
         
-        quest.status = 'in_progress'
-        quest.updated_at = datetime.utcnow()
         db.session.commit()
         
-        return jsonify({'quest': quest.to_dict()}), 200
+        return jsonify({
+            'message': 'Quest completed! 🎉',
+            'quest': {
+                'id': quest.id,
+                'name': quest.name,
+                'completed': quest.completed,
+                'status': quest.status
+            }
+        }), 200
         
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
-@quests_bp.route('/<int:quest_id>/complete', methods=['POST'])
+@quests_bp.route('/all', methods=['GET'])
 @jwt_required()
-def complete_quest(quest_id):
-    """Mark quest as completed"""
+def get_all_quests():
+    """Get all quests across all games for the current user"""
     try:
         user_id = get_jwt_identity()
-        quest = Quest.query.join(Game).filter(
-            Quest.id == quest_id,
-            Game.user_id == user_id
-        ).first()
         
-        if not quest:
-            return jsonify({'error': 'Quest not found'}), 404
+        # Get all games for this user
+        games = Game.query.filter_by(user_id=user_id).all()
+        game_ids = [g.id for g in games]
         
-        data = request.get_json() or {}
+        # Get all quests for these games
+        quests = Quest.query.filter(Quest.game_id.in_(game_ids)).all()
         
-        quest.status = 'completed'
-        quest.completion_time = data.get('completion_time')
-        quest.updated_at = datetime.utcnow()
-        db.session.commit()
-        
-        return jsonify({'quest': quest.to_dict()}), 200
+        return jsonify({
+            'quests': [{
+                'id': q.id,
+                'name': q.name,
+                'description': q.description,
+                'difficulty': q.difficulty,
+                'status': q.status,
+                'completed': q.completed,
+                'game_id': q.game_id
+            } for q in quests]
+        }), 200
         
     except Exception as e:
-        db.session.rollback()
         return jsonify({'error': str(e)}), 500

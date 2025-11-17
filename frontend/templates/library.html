@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block title %}Game Library - GrimoireGame{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --primary: {{ theme.primary }};
+    --secondary: {{ theme.secondary }};
+    --accent: {{ theme.accent }};
+    --danger: {{ theme.danger }};
+}
+
+.library-container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+.library-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, {{ theme.bg_primary }}, {{ theme.bg_secondary }});
+    border: 3px solid var(--primary);
+    border-radius: 15px;
+}
+
+.library-title {
+    font-family: 'Cinzel', serif;
+    font-size: 3rem;
+    color: var(--primary);
+    animation: glow 3s ease-in-out infinite;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.filter-btn {
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    transition: all 0.3s ease;
+}
+
+.filter-btn.active, .filter-btn:hover {
+    background: var(--primary);
+    color: #000;
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.game-card {
+    background: linear-gradient(135deg, {{ theme.bg_primary }}, {{ theme.bg_secondary }});
+    border: 3px solid var(--primary);
+    border-radius: 15px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    animation: fadeIn 0.8s ease-out backwards;
+    position: relative;
+}
+
+.game-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.5);
+    border-color: var(--accent);
+}
+
+.game-cover {
+    font-size: 5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.game-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.game-info {
+    color: var(--secondary);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--primary);
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-label {
+    color: var(--secondary);
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.stat-value {
+    color: var(--primary);
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.status-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-family: 'Cinzel', serif;
+    text-transform: uppercase;
+}
+
+.status-playing {
+    background: var(--accent);
+    color: #000;
+}
+
+.status-completed {
+    background: var(--primary);
+    color: #000;
+}
+
+.status-backlog {
+    background: var(--secondary);
+    color: #fff;
+}
+
+.delete-game {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    background: rgba(139, 0, 0, 0.3);
+    border: 2px solid var(--danger);
+    color: var(--danger);
+    padding: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.delete-game:hover {
+    background: var(--danger);
+    color: white;
+}
+
+.add-game-section {
+    background: linear-gradient(135deg, {{ theme.bg_primary }}, {{ theme.bg_secondary }});
+    border: 3px solid var(--accent);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+}
+
+.add-game-title {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.add-game-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+    font-family: 'Cinzel', serif;
+}
+
+.add-game-form input, .add-game-form select {
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-family: 'IM Fell English', serif;
+}
+
+.add-game-btn {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
+    color: #000;
+    border: 2px solid var(--primary);
+    padding: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+.add-game-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(180deg, rgba(42, 24, 16, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem;
+    color: var(--secondary);
+}
+
+.empty-state h3 {
+    font-family: 'Cinzel', serif;
+    color: var(--primary);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="top-bar">
+    <button class="btn" onclick="transitionToPage('/')">🏠 Return to Sanctum</button>
+    <button class="btn btn-green" onclick="transitionToPage('/settings')">⚙️ Settings</button>
+</div>
+
+<div class="library-container">
+    <div class="library-header">
+        <h1 class="library-title">📚 Game Library</h1>
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterGames('all')">All</button>
+            <button class="filter-btn" onclick="filterGames('playing')">Playing</button>
+            <button class="filter-btn" onclick="filterGames('completed')">Completed</button>
+            <button class="filter-btn" onclick="filterGames('backlog')">Backlog</button>
+        </div>
+    </div>
+
+    <div class="add-game-section">
+        <h2 class="add-game-title">✨ Add New Game ✨</h2>
+        <div class="add-game-form">
+            <div class="form-group">
+                <label>Game Title</label>
+                <input type="text" id="gameTitle" placeholder="Enter game name...">
+            </div>
+            <div class="form-group">
+                <label>Cover Icon</label>
+                <select id="gameCover">
+                    <option value="🎮">🎮 Controller</option>
+                    <option value="🐉">🐉 Dragon</option>
+                    <option value="🗡️">🗡️ Sword</option>
+                    <option value="🏰">🏰 Castle</option>
+                    <option value="🧙">🧙 Wizard</option>
+                    <option value="⚔️">⚔️ Crossed Swords</option>
+                    <option value="🛡️">🛡️ Shield</option>
+                    <option value="👾">👾 Alien</option>
+                    <option value="🎯">🎯 Target</option>
+                    <option value="🏆">🏆 Trophy</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Genre</label>
+                <input type="text" id="gameGenre" placeholder="RPG, Action, etc...">
+            </div>
+            <div class="form-group">
+                <label>Difficulty</label>
+                <select id="gameDifficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                    <option value="expert">Expert</option>
+                </select>
+            </div>
+            <button class="add-game-btn" onclick="addGame()">➕ Add to Library</button>
+        </div>
+    </div>
+
+    <div class="games-grid" id="gamesGrid">
+        {% if games %}
+            {% for game in games %}
+            <div class="game-card" data-status="{{ game.status or 'backlog' }}" onclick="viewGame({{ game.id }}, event)">
+                <span class="status-badge status-{{ game.status or 'backlog' }}">{{ game.status or 'backlog' }}</span>
+                <div class="game-cover">{{ game.cover_image or '🎮' }}</div>
+                <h3 class="game-title">{{ game.name }}</h3>
+                {% if game.genre %}
+                <p class="game-info">Genre: {{ game.genre }}</p>
+                {% endif %}
+                {% if game.difficulty %}
+                <p class="game-info">Difficulty: {{ game.difficulty }}</p>
+                {% endif %}
+                <button class="delete-game" onclick="deleteGame({{ game.id }}, event)">🗑️</button>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <h3>📚 Your library is empty</h3>
+                <p>Add your first game using the form above!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function filterGames(status) {
+    const cards = document.querySelectorAll('.game-card');
+    const buttons = document.querySelectorAll('.filter-btn');
+    
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    cards.forEach(card => {
+        if (status === 'all' || card.dataset.status === status) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function viewGame(gameId, event) {
+    // Don't navigate if clicking delete button
+    if (event.target.classList.contains('delete-game')) {
+        return;
+    }
+    transitionToPage('/game/' + gameId);
+}
+
+function addGame() {
+    const title = document.getElementById('gameTitle').value;
+    const cover = document.getElementById('gameCover').value;
+    const genre = document.getElementById('gameGenre').value;
+    const difficulty = document.getElementById('gameDifficulty').value;
+    
+    if (!title) {
+        alert('Please enter a game title!');
+        return;
+    }
+    
+    fetch('/api/library', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            title: title,
+            cover: cover,
+            genre: genre,
+            difficulty: difficulty
+        })
+    })
+    .then(r => r.json())
+    .then(() => {
+        transitionToPage('/library');
+    })
+    .catch(err => {
+        console.error('Error adding game:', err);
+        alert('Failed to add game. Please try again.');
+    });
+}
+
+function deleteGame(id, event) {
+    event.stopPropagation(); // Prevent card click
+    
+    if (confirm('Remove this game from your library?')) {
+        fetch(`/api/library/${id}`, { method: 'DELETE' })
+            .then(() => {
+                transitionToPage('/library');
+            })
+            .catch(err => {
+                console.error('Error deleting game:', err);
+                alert('Failed to delete game. Please try again.');
+            });
+    }
+}
+</script>
+{% endblock %}

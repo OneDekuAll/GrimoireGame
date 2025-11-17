@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - GrimoreGame</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, {{ theme.bg_primary }}, {{ theme.bg_secondary }});
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .login-container {
+            background: rgba(20, 10, 40, 0.9);
+            border: 2px solid {{ theme.primary }};
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 0 50px rgba(160, 32, 240, 0.3);
+        }
+
+        .grimoire-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .grimoire-title h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, {{ theme.primary }}, {{ theme.accent }});
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .grimoire-title p {
+            color: {{ theme.accent }};
+            font-size: 0.9em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: {{ theme.accent }};
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid {{ theme.primary }};
+            border-radius: 8px;
+            color: white;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: {{ theme.accent }};
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(160, 32, 240, 0.3);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, {{ theme.primary }}, {{ theme.secondary }});
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(160, 32, 240, 0.5);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: {{ theme.accent }};
+        }
+
+        .register-link a {
+            color: {{ theme.primary }};
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .register-link a:hover {
+            color: {{ theme.accent }};
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .alert-danger {
+            background: rgba(220, 20, 60, 0.2);
+            border: 1px solid #dc143c;
+            color: #ff6b6b;
+        }
+
+        .alert-success {
+            background: rgba(50, 205, 50, 0.2);
+            border: 1px solid #32cd32;
+            color: #90ee90;
+        }
+
+        .magic-circle {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border: 2px solid {{ theme.primary }};
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: rotate 20s linear infinite;
+        }
+
+        .magic-circle:nth-child(1) {
+            top: -100px;
+            left: -100px;
+        }
+
+        .magic-circle:nth-child(2) {
+            bottom: -100px;
+            right: -100px;
+            animation-direction: reverse;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="magic-circle"></div>
+    <div class="magic-circle"></div>
+
+    <div class="login-container">
+        <div class="grimoire-title">
+            <h1>✨ GrimoreGame ✨</h1>
+            <p>Enter the Realm of Mysteries</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="form-group">
+                <label for="email">👤 Username or Email</label>
+                <input type="text" id="email" name="email" required placeholder="username or email@example.com" autocomplete="username">
+                <small style="color: {{ theme.secondary }}; font-size: 0.85em; margin-top: 0.3rem; display: block;">
+                    You can use either your username or email address
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="password">🔐 Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password" autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn-login">🌟 Enter the Grimoire</button>
+        </form>
+
+        <div class="register-link">
+            <p>New to the realm? <a href="{{ url_for('register') }}">Create an Account</a></p>
+        </div>
+    </div>
+</body>
+</html>

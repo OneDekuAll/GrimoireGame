@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}GrimoireGame - Your mystical gaming companion{% endblock %}
+
+{% block content %}
+<style>
+.adventure-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 2.5rem;
+    margin: 3rem 0;
+}
+
+.adventure-card {
+    border: 3px solid;
+    border-radius: 15px;
+    padding: 2.5rem;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.8s ease-out backwards;
+}
+
+.adventure-card:nth-child(1) { animation-delay: 0.1s; }
+.adventure-card:nth-child(2) { animation-delay: 0.2s; }
+.adventure-card:nth-child(3) { animation-delay: 0.3s; }
+.adventure-card:nth-child(4) { animation-delay: 0.4s; }
+
+.adventure-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.adventure-card:hover::before {
+    left: 100%;
+}
+
+.adventure-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 
+        0 15px 60px rgba(212, 175, 55, 0.6),
+        inset 0 0 40px rgba(212, 175, 55, 0.1);
+}
+
+.adventure-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+    animation: float 3s ease-in-out infinite;
+}
+
+.adventure-title {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+.adventure-desc {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    font-style: italic;
+}
+
+.difficulty-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    font-family: 'Cinzel', serif;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    animation: pulse 2s infinite;
+    box-shadow: 0 0 15px rgba(220, 20, 60, 0.5);
+}
+
+.enter-realm {
+    float: right;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.adventure-card:hover .enter-realm {
+    transform: translateX(5px);
+}
+
+.bottom-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 4rem;
+    flex-wrap: wrap;
+}
+
+.title-section {
+    text-align: center;
+    margin: 3rem 0;
+}
+
+.title-section h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.5rem;
+    text-shadow: 0 0 20px rgba(144, 238, 144, 0.5);
+    animation: glow 2s ease-in-out infinite;
+    letter-spacing: 0.2rem;
+    text-transform: uppercase;
+}
+
+.recent-games-section {
+    margin-top: 4rem;
+}
+
+.recent-games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.recent-game-card {
+    background: linear-gradient(135deg, {{ theme.bg_primary }}, {{ theme.bg_secondary }});
+    border: 2px solid {{ theme.primary }};
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.recent-game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(160, 32, 240, 0.4);
+}
+
+.recent-game-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.recent-game-title {
+    font-family: 'Cinzel', serif;
+    color: {{ theme.primary }};
+    font-size: 1.2rem;
+}
+</style>
+
+<div class="header">
+    <h1 style="color: {{ theme.primary }};">✨ GrimoireGame ✨</h1>
+    <p style="color: {{ theme.secondary }};">Your mystical gaming companion</p>
+</div>
+
+<div class="container">
+    <div class="title-section">
+        <h2 style="color: {{ theme.accent }};">Choose Your Adventure</h2>
+    </div>
+    
+    <div class="adventure-grid">
+        {% for adventure in adventures %}
+        <div class="adventure-card" 
+             style="background: linear-gradient(135deg, {{ theme.bg_primary }}, {{ theme.bg_secondary }}); border-color: {{ theme.primary }};"
+             onclick="transitionToPage('/library')">
+            <div class="adventure-icon">
+                {% if loop.index == 1 %}📜
+                {% elif loop.index == 2 %}🗡️
+                {% elif loop.index == 3 %}💎
+                {% else %}🛡️{% endif %}
+            </div>
+            <h3 class="adventure-title" style="color: {{ theme.primary }};">{{ adventure.name }}</h3>
+            <p class="adventure-desc" style="color: {{ theme.secondary }};">{{ adventure.description }}</p>
+            <span class="difficulty-badge">{{ adventure.difficulty }}</span>
+            <span class="enter-realm" style="color: {{ theme.primary }};">→ View in Library</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if games %}
+    <div class="recent-games-section">
+        <div class="title-section">
+            <h2 style="color: {{ theme.accent }};">Your Games</h2>
+        </div>
+        <div class="recent-games-grid">
+            {% for game in games[:4] %}
+            <div class="recent-game-card" onclick="transitionToPage('/game/{{ game.id }}')">
+                <div class="recent-game-icon">{{ game.cover_image or '🎮' }}</div>
+                <h3 class="recent-game-title">{{ game.name }}</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="bottom-buttons">
+        <button class="btn" onclick="transitionToPage('/library')">📚 Game Library</button>
+        <button class="btn" onclick="transitionToPage('/quest-grimoire')">📖 Quest Grimoire</button>
+        <button class="btn btn-green" onclick="transitionToPage('/settings')">⚙️ Grimoire Settings</button>
+    </div>
+</div>
+{% endblock %}
